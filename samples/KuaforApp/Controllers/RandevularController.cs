@@ -54,11 +54,36 @@ public class RandevularController : Controller
             return View(await BuildViewModelAsync(model));
         }
 
-        var musteriVarMi = await _context.Musteriler.AnyAsync(m => m.Id == model.MusteriId);
-        if (!musteriVarMi)
+        var yeniMusteriAdiGirildi = !string.IsNullOrWhiteSpace(model.YeniMusteriAdi);
+
+        if (!model.MusteriId.HasValue && !yeniMusteriAdiGirildi)
         {
-            ModelState.AddModelError(string.Empty, "Seçilen müşteri bulunamadı.");
+            ModelState.AddModelError(string.Empty, "Mevcut bir müşteri seçin veya yeni müşteri adı girin.");
             return View(await BuildViewModelAsync(model));
+        }
+
+        int musteriId;
+        if (yeniMusteriAdiGirildi)
+        {
+            var yeniMusteri = new Musteri
+            {
+                TenantId = _currentTenant.TenantId!.Value,
+                AdSoyad = model.YeniMusteriAdi!.Trim(),
+                Telefon = model.YeniMusteriTelefon?.Trim() ?? string.Empty
+            };
+            _context.Musteriler.Add(yeniMusteri);
+            await _context.SaveChangesAsync();
+            musteriId = yeniMusteri.Id;
+        }
+        else
+        {
+            var musteriVarMi = await _context.Musteriler.AnyAsync(m => m.Id == model.MusteriId);
+            if (!musteriVarMi)
+            {
+                ModelState.AddModelError(string.Empty, "Seçilen müşteri bulunamadı.");
+                return View(await BuildViewModelAsync(model));
+            }
+            musteriId = model.MusteriId!.Value;
         }
 
         var yeniBaslangic = model.BaslangicZamani;
@@ -91,7 +116,7 @@ public class RandevularController : Controller
         var randevu = new Randevu
         {
             TenantId = _currentTenant.TenantId!.Value,
-            MusteriId = model.MusteriId,
+            MusteriId = musteriId,
             HizmetId = model.HizmetId,
             BaslangicZamani = yeniBaslangic,
             Durum = RandevuDurumu.Planlandi
