@@ -1,0 +1,60 @@
+@model List<KuaforApp.Models.Randevu>
+@{
+    ViewData["Title"] = "Randevular";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Randevular</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Randevu</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Müşteri</th>
+                <th>Hizmet</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>Durum</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var randevu in Model)
+            {
+                <tr>
+                    <td>@randevu.Musteri?.AdSoyad</td>
+                    <td>@randevu.Hizmet?.Ad</td>
+                    <td>@randevu.BaslangicZamani.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@randevu.BitisZamani.ToString("HH:mm")</td>
+                    <td>
+                        @switch (randevu.Durum)
+                        {
+                            case KuaforApp.Models.RandevuDurumu.Planlandi:
+                                <span class="badge bg-primary">Planlandı</span>
+                                break;
+                            case KuaforApp.Models.RandevuDurumu.Tamamlandi:
+                                <span class="badge bg-success">Tamamlandı</span>
+                                break;
+                            case KuaforApp.Models.RandevuDurumu.IptalEdildi:
+                                <span class="badge bg-secondary">İptal Edildi</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @if (randevu.Durum == KuaforApp.Models.RandevuDurumu.Planlandi)
+                        {
+                            <form asp-action="Tamamlandi" asp-route-id="@randevu.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">Tamamlandı</button>
+                            </form>
+                            <form asp-action="Iptal" asp-route-id="@randevu.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

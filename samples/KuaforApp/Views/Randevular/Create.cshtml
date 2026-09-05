@@ -1,0 +1,37 @@
+@model KuaforApp.Models.RandevuCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Randevu";
+}
+
+<h2 class="mb-4">Yeni Randevu</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="MusteriId" class="form-label">Müşteri</label>
+            <select asp-for="MusteriId" asp-items="Model.Musteriler" class="form-select">
+                <option value="">-- Müşteri seçin --</option>
+            </select>
+            <span asp-validation-for="MusteriId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="HizmetId" class="form-label">Hizmet</label>
+            <select asp-for="HizmetId" asp-items="Model.Hizmetler" class="form-select">
+                <option value="">-- Hizmet seçin --</option>
+            </select>
+            <span asp-validation-for="HizmetId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="BaslangicZamani" class="form-label"></label>
+            <input asp-for="BaslangicZamani" class="form-control" type="datetime-local" />
+            <span asp-validation-for="BaslangicZamani" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

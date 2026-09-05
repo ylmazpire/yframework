@@ -1,0 +1,29 @@
+@model List<KuaforApp.Models.Musteri>
+@{
+    ViewData["Title"] = "Müşteriler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Müşteriler</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Müşteri</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ad Soyad</th>
+                <th>Telefon</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var musteri in Model)
+            {
+                <tr>
+                    <td>@musteri.AdSoyad</td>
+                    <td>@musteri.Telefon</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

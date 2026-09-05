@@ -1,0 +1,31 @@
+@model List<KuaforApp.Models.Hizmet>
+@{
+    ViewData["Title"] = "Hizmetler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Hizmetler</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Hizmet</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Süre (dk)</th>
+                <th>Fiyat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hizmet in Model)
+            {
+                <tr>
+                    <td>@hizmet.Ad</td>
+                    <td>@hizmet.SureDakika</td>
+                    <td>@hizmet.Fiyat.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
