@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Verilerim";
+}
+
+<h2 class="mb-3">Verilerim</h2>
+<p class="text-muted mb-4">Kendi verilerini CSV dosyası olarak indirip yedekleyebilirsin. Excel'de açılabilir.</p>
+
+<div class="surface-card">
+    <div class="list-card d-flex justify-content-between align-items-center">
+        <div>
+            <div class="list-card-title">Müşteriler</div>
+            <div class="list-card-subtitle">Tüm müşteri listesi</div>
+        </div>
+        <a asp-action="Musteriler" class="btn btn-sm btn-outline-secondary">⬇ İndir</a>
+    </div>
+    <div class="list-card d-flex justify-content-between align-items-center">
+        <div>
+            <div class="list-card-title">Randevular</div>
+            <div class="list-card-subtitle">Tüm randevu geçmişi</div>
+        </div>
+        <a asp-action="Randevular" class="btn btn-sm btn-outline-secondary">⬇ İndir</a>
+    </div>
+    <div class="list-card d-flex justify-content-between align-items-center">
+        <div>
+            <div class="list-card-title">Muhasebe</div>
+            <div class="list-card-subtitle">Tüm gelir/gider kayıtları</div>
+        </div>
+        <a asp-action="Muhasebe" class="btn btn-sm btn-outline-secondary">⬇ İndir</a>
+    </div>
+    <div class="list-card d-flex justify-content-between align-items-center">
+        <div>
+            <div class="list-card-title">Hizmetler</div>
+            <div class="list-card-subtitle">Hizmet fiyat listesi</div>
+        </div>
+        <a asp-action="Hizmetler" class="btn btn-sm btn-outline-secondary">⬇ İndir</a>
+    </div>
+</div>

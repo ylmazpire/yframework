@@ -37,6 +37,7 @@
                         <a class="nav-link @(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">💈 Hizmetler</a>
                         <a class="nav-link @(currentController == "Personel" ? "active" : "")" asp-controller="Personel" asp-action="Index">🧑‍💼 Personel</a>
                         <a class="nav-link @(currentController == "Muhasebe" || currentController == "MuhasebeKategoriler" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">💰 Muhasebe</a>
+                        <a class="nav-link @(currentController == "Veri" ? "active" : "")" asp-controller="Veri" asp-action="Index">📥 Verilerim</a>
                     }
                     else if (isPlatformAdmin)
                     {
