@@ -30,6 +30,7 @@ public class RandevularController : Controller
         var sorgu = _context.Randevular
             .Include(r => r.Musteri)
             .Include(r => r.Hizmet)
+            .Include(r => r.Personel)
             .AsQueryable();
 
         var bugun = DateTime.Today;
@@ -109,6 +110,23 @@ public class RandevularController : Controller
             musteriId = model.MusteriId!.Value;
         }
 
+        var personelVarMi = await _context.Personeller.AnyAsync();
+        if (personelVarMi)
+        {
+            if (!model.PersonelId.HasValue)
+            {
+                ModelState.AddModelError(string.Empty, "Personel seçimi zorunludur.");
+                return View(await BuildViewModelAsync(model));
+            }
+
+            var secilenPersonelVarMi = await _context.Personeller.AnyAsync(p => p.Id == model.PersonelId);
+            if (!secilenPersonelVarMi)
+            {
+                ModelState.AddModelError(string.Empty, "Seçilen personel bulunamadı.");
+                return View(await BuildViewModelAsync(model));
+            }
+        }
+
         var yeniBaslangic = model.BaslangicZamani;
         var yeniBitis = yeniBaslangic.AddMinutes(hizmet.SureDakika);
 
@@ -119,12 +137,20 @@ public class RandevularController : Controller
         // (iki eşzamanlı istek aynı saate randevu almaya çalışması) engellemek için.
         await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
-        var mevcutRandevular = await _context.Randevular
+        var mevcutRandevularSorgu = _context.Randevular
             .Include(r => r.Hizmet)
             .Where(r => r.Durum != RandevuDurumu.IptalEdildi
                         && r.BaslangicZamani >= pencereBaslangic
-                        && r.BaslangicZamani <= yeniBitis)
-            .ToListAsync();
+                        && r.BaslangicZamani <= yeniBitis);
+
+        // Personel tanımlıysa çakışma sadece aynı personelin randevuları arasında kontrol edilir
+        // (farklı personeller aynı saatte farklı müşterilere hizmet verebilir).
+        if (personelVarMi)
+        {
+            mevcutRandevularSorgu = mevcutRandevularSorgu.Where(r => r.PersonelId == model.PersonelId);
+        }
+
+        var mevcutRandevular = await mevcutRandevularSorgu.ToListAsync();
 
         var cakisiyorMu = mevcutRandevular.Any(r =>
             OverlapChecker.Overlaps(yeniBaslangic, yeniBitis, r.BaslangicZamani, r.BitisZamani));
@@ -141,6 +167,7 @@ public class RandevularController : Controller
             TenantId = _currentTenant.TenantId!.Value,
             MusteriId = musteriId,
             HizmetId = model.HizmetId,
+            PersonelId = personelVarMi ? model.PersonelId : null,
             BaslangicZamani = yeniBaslangic,
             Durum = RandevuDurumu.Planlandi
         };
@@ -214,6 +241,7 @@ public class RandevularController : Controller
         var randevular = await _context.Randevular
             .Include(r => r.Musteri)
             .Include(r => r.Hizmet)
+            .Include(r => r.Personel)
             .Where(r => r.BaslangicZamani >= secilenGun && r.BaslangicZamani < ertesiGun)
             .OrderBy(r => r.BaslangicZamani)
             .ToListAsync();
@@ -244,6 +272,11 @@ public class RandevularController : Controller
         model.Hizmetler = await _context.Hizmetler
             .OrderBy(h => h.Ad)
             .Select(h => new SelectListItem { Value = h.Id.ToString(), Text = h.Ad + " (" + h.SureDakika + " dk)" })
+            .ToListAsync();
+
+        model.Personeller = await _context.Personeller
+            .OrderBy(p => p.AdSoyad)
+            .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.AdSoyad })
             .ToListAsync();
 
         return model;

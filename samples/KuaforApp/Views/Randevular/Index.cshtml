@@ -58,7 +58,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <div class="list-card-title">@randevu.Musteri?.AdSoyad</div>
-                    <div class="list-card-subtitle">@randevu.Hizmet?.Ad</div>
+                    <div class="list-card-subtitle">@randevu.Hizmet?.Ad@(randevu.Personel is not null ? " · " + randevu.Personel.AdSoyad : "")</div>
                 </div>
                 <span class="badge @DurumBadgeClass(randevu.Durum)">@DurumMetni(randevu.Durum)</span>
             </div>
@@ -87,6 +87,7 @@
             <tr class="text-muted small text-uppercase">
                 <th>Müşteri</th>
                 <th>Hizmet</th>
+                <th>Personel</th>
                 <th>Başlangıç</th>
                 <th>Bitiş</th>
                 <th>Durum</th>
@@ -99,6 +100,7 @@
                 <tr>
                     <td>@randevu.Musteri?.AdSoyad</td>
                     <td>@randevu.Hizmet?.Ad</td>
+                    <td>@(randevu.Personel?.AdSoyad ?? "-")</td>
                     <td>@randevu.BaslangicZamani.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@randevu.BitisZamani.ToString("HH:mm")</td>
                     <td><span class="badge @DurumBadgeClass(randevu.Durum)">@DurumMetni(randevu.Durum)</span></td>

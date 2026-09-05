@@ -18,6 +18,7 @@ public class AppDbContext : YFrameworkIdentityDbContext<ApplicationUser>
     public DbSet<Isletme> Isletmeler => Set<Isletme>();
     public DbSet<Musteri> Musteriler => Set<Musteri>();
     public DbSet<Hizmet> Hizmetler => Set<Hizmet>();
+    public DbSet<Personel> Personeller => Set<Personel>();
     public DbSet<Randevu> Randevular => Set<Randevu>();
     public DbSet<MuhasebeKategorisi> MuhasebeKategorileri => Set<MuhasebeKategorisi>();
     public DbSet<MuhasebeKaydi> MuhasebeKayitlari => Set<MuhasebeKaydi>();

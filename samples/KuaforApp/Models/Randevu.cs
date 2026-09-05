@@ -24,6 +24,10 @@ public class Randevu : ITenantScoped
     public int HizmetId { get; set; }
     public Hizmet? Hizmet { get; set; }
 
+    /// <summary>İşletmede personel tanımlıysa doldurulur. Tek kişilik işletmelerde null kalabilir.</summary>
+    public int? PersonelId { get; set; }
+    public Personel? Personel { get; set; }
+
     [Required(ErrorMessage = "Başlangıç zamanı zorunludur.")]
     public DateTime BaslangicZamani { get; set; }
 

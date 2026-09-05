@@ -35,6 +35,7 @@
                         <a class="nav-link @(currentController == "Randevular" ? "active" : "")" asp-controller="Randevular" asp-action="Index">📅 Randevular</a>
                         <a class="nav-link @(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">👥 Müşteriler</a>
                         <a class="nav-link @(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">💈 Hizmetler</a>
+                        <a class="nav-link @(currentController == "Personel" ? "active" : "")" asp-controller="Personel" asp-action="Index">🧑‍💼 Personel</a>
                         <a class="nav-link @(currentController == "Muhasebe" || currentController == "MuhasebeKategoriler" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">💰 Muhasebe</a>
                     }
                     else if (isPlatformAdmin)

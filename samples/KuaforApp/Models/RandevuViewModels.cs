@@ -21,6 +21,13 @@ public class RandevuCreateViewModel
     [Required(ErrorMessage = "Başlangıç zamanı zorunludur.")]
     public DateTime BaslangicZamani { get; set; } = DateTime.Now;
 
+    /// <summary>İşletmede personel tanımlıysa doldurulur.</summary>
+    public int? PersonelId { get; set; }
+
     public List<SelectListItem> Musteriler { get; set; } = new();
     public List<SelectListItem> Hizmetler { get; set; } = new();
+    public List<SelectListItem> Personeller { get; set; } = new();
+
+    /// <summary>Personel listesi boşsa form personel alanını göstermez.</summary>
+    public bool PersonelSecimiVar => Personeller.Any();
 }

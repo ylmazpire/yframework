@@ -42,6 +42,15 @@
             <input asp-for="BaslangicZamani" class="form-control" type="datetime-local" />
             <span asp-validation-for="BaslangicZamani" class="text-danger"></span>
         </div>
+        @if (Model.PersonelSecimiVar)
+        {
+            <div class="mb-3">
+                <label asp-for="PersonelId" class="form-label">Personel</label>
+                <select asp-for="PersonelId" asp-items="Model.Personeller" class="form-select">
+                    <option value="">-- Personel seçin --</option>
+                </select>
+            </div>
+        }
         <button type="submit" class="btn btn-primary">Kaydet</button>
         <a asp-action="Index" class="btn btn-secondary">İptal</a>
     </form>
