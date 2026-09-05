@@ -211,15 +211,28 @@ a {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 1.1rem;
-  padding: 1.1rem;
+  padding: 0.75rem;
   height: 100%;
 }
 
+@media (min-width: 576px) {
+  .stat-card {
+    padding: 1.1rem;
+  }
+}
+
 .stat-card .stat-value {
-  font-size: 1.7rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 576px) {
+  .stat-card .stat-value {
+    font-size: 1.7rem;
+  }
 }
 
 .stat-card .stat-label {
@@ -232,6 +245,18 @@ a {
   border: 1px solid var(--border);
   border-radius: 1.1rem;
   padding: 1.25rem;
+}
+
+.chart-holder {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .chart-holder {
+    height: 280px;
+  }
 }
 
 /* ---- Hero card (dashboard net kazanç) ---- */
@@ -321,14 +346,22 @@ a {
   margin-bottom: 0.6rem;
 }
 
+/* Flex öğeleri varsayılan olarak içeriğin altına küçülmez; uzun isim/e-posta gibi
+   metinlerin yan taraftaki butonu dışarı itip yatay taşmaya sebep olmasını engeller. */
+.list-card.d-flex > div:first-child {
+  min-width: 0;
+}
+
 .list-card .list-card-title {
   font-weight: 600;
   color: var(--text);
+  overflow-wrap: break-word;
 }
 
 .list-card .list-card-subtitle {
   color: var(--text-muted);
   font-size: 0.85rem;
+  overflow-wrap: break-word;
 }
 
 /* ---- Bootstrap overrides for dark theme ---- */

@@ -22,15 +22,15 @@
     };
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <h2 class="mb-0">Gün Sonu Özeti</h2>
-    <a asp-action="Index" class="btn btn-outline-secondary">← Randevulara Dön</a>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Randevulara Dön</a>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-sm btn-outline-secondary" asp-action="GunSonu" asp-route-tarih="@oncekiGun.ToString("yyyy-MM-dd")">← Önceki Gün</a>
-    <h5 class="mb-0">@Model.Tarih.ToString("dd.MM.yyyy dddd", trTr)</h5>
-    <a class="btn btn-sm btn-outline-secondary" asp-action="GunSonu" asp-route-tarih="@sonrakiGun.ToString("yyyy-MM-dd")">Sonraki Gün →</a>
+<div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+    <a class="btn btn-sm btn-outline-secondary flex-shrink-0" asp-action="GunSonu" asp-route-tarih="@oncekiGun.ToString("yyyy-MM-dd")">← <span class="d-none d-sm-inline">Önceki Gün</span></a>
+    <h5 class="mb-0 text-center" style="font-size: 0.95rem;">@Model.Tarih.ToString("dd.MM.yyyy dddd", trTr)</h5>
+    <a class="btn btn-sm btn-outline-secondary flex-shrink-0" asp-action="GunSonu" asp-route-tarih="@sonrakiGun.ToString("yyyy-MM-dd")"><span class="d-none d-sm-inline">Sonraki Gün</span> →</a>
 </div>
 
 <div class="hero-card mb-4">

@@ -23,10 +23,10 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-sm btn-outline-secondary" asp-action="Index" asp-route-yil="@oncekiAy.Year" asp-route-ay="@oncekiAy.Month">← @aylar[oncekiAy.Month]</a>
-    <h5 class="mb-0">@aylar[Model.Ay] @Model.Yil</h5>
-    <a class="btn btn-sm btn-outline-secondary" asp-action="Index" asp-route-yil="@sonrakiAy.Year" asp-route-ay="@sonrakiAy.Month">@aylar[sonrakiAy.Month] →</a>
+<div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+    <a class="btn btn-sm btn-outline-secondary flex-shrink-0" asp-action="Index" asp-route-yil="@oncekiAy.Year" asp-route-ay="@oncekiAy.Month">← <span class="d-none d-sm-inline">@aylar[oncekiAy.Month]</span></a>
+    <h5 class="mb-0 text-center" style="font-size: 0.95rem;">@aylar[Model.Ay] @Model.Yil</h5>
+    <a class="btn btn-sm btn-outline-secondary flex-shrink-0" asp-action="Index" asp-route-yil="@sonrakiAy.Year" asp-route-ay="@sonrakiAy.Month"><span class="d-none d-sm-inline">@aylar[sonrakiAy.Month]</span> →</a>
 </div>
 
 <div class="row g-3 mb-4">

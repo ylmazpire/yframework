@@ -118,13 +118,10 @@
         (function () {
             function temayiDegistir() {
                 var suanKoyuMu = document.documentElement.getAttribute('data-theme') !== 'light';
-                if (suanKoyuMu) {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('tema', 'light');
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    localStorage.setItem('tema', 'dark');
-                }
+                localStorage.setItem('tema', suanKoyuMu ? 'light' : 'dark');
+                // Sayfayı yeniliyoruz ki Chart.js gibi bir kere çizilip donan bileşenler de
+                // yeni temanın renkleriyle baştan çizilsin.
+                location.reload();
             }
             var b1 = document.getElementById('temaButonuMasaustu');
             var b2 = document.getElementById('temaButonuMobil');

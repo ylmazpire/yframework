@@ -69,7 +69,9 @@
 
 <div class="surface-card mb-4">
     <h6 class="mb-3">Son 6 Ay Gelir/Gider</h6>
-    <canvas id="trendGrafik" height="200"></canvas>
+    <div class="chart-holder">
+        <canvas id="trendGrafik"></canvas>
+    </div>
 </div>
 
 <div class="surface-card">
@@ -100,6 +102,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
     <script>
         (function () {
+            // Renkleri o anki temadan (CSS değişkenlerinden) okuyoruz ki açık/koyu tema ile uyumlu olsun.
+            var stil = getComputedStyle(document.documentElement);
+            var metinMuted = stil.getPropertyValue('--text-muted').trim() || '#98989f';
+            var kenarRengi = stil.getPropertyValue('--border').trim() || '#2c2c2e';
+            var kirmizi = stil.getPropertyValue('--accent').trim() || '#ff073a';
+
             var ctx = document.getElementById('trendGrafik');
             new Chart(ctx, {
                 type: 'bar',
@@ -114,18 +122,19 @@
                         {
                             label: 'Gider',
                             data: @Html.Raw(trendGider),
-                            backgroundColor: '#ff073a'
+                            backgroundColor: kirmizi
                         }
                     ]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: '#98989f' } }
+                        legend: { labels: { color: metinMuted } }
                     },
                     scales: {
-                        x: { ticks: { color: '#98989f' }, grid: { color: '#2c2c2e' } },
-                        y: { ticks: { color: '#98989f' }, grid: { color: '#2c2c2e' }, beginAtZero: true }
+                        x: { ticks: { color: metinMuted }, grid: { color: kenarRengi } },
+                        y: { ticks: { color: metinMuted }, grid: { color: kenarRengi }, beginAtZero: true }
                     }
                 }
             });

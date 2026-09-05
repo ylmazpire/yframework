@@ -4,7 +4,7 @@
     ViewData["Title"] = "Müşteriler";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <h2 class="mb-0">Müşteriler</h2>
     <a asp-action="Create" class="btn btn-primary">+ Yeni Müşteri</a>
 </div>
@@ -30,23 +30,21 @@
     @foreach (var musteri in Model)
     {
         <div class="list-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <a asp-action="Detay" asp-route-id="@musteri.Id" style="color: inherit; text-decoration: none;">
-                    <div class="list-card-title">@musteri.AdSoyad</div>
-                    <div class="list-card-subtitle">@musteri.Telefon</div>
-                </a>
-                <div class="d-flex gap-2">
-                    @{ var e164 = TurkishPhoneNumberFormatter.ToE164(musteri.Telefon); }
-                    @if (e164 is not null)
-                    {
-                        <a href="tel:@e164" class="btn btn-sm btn-outline-secondary" title="Ara">📞</a>
-                        <a href="https://wa.me/@e164.TrimStart('+')" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary" title="WhatsApp">💬</a>
-                    }
-                    <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
-                    <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
-                    </form>
-                </div>
+            <a asp-action="Detay" asp-route-id="@musteri.Id" style="color: inherit; text-decoration: none;">
+                <div class="list-card-title">@musteri.AdSoyad</div>
+                <div class="list-card-subtitle">@musteri.Telefon</div>
+            </a>
+            <div class="d-flex gap-2 flex-wrap mt-2">
+                @{ var e164 = TurkishPhoneNumberFormatter.ToE164(musteri.Telefon); }
+                @if (e164 is not null)
+                {
+                    <a href="tel:@e164" class="btn btn-sm btn-outline-secondary" title="Ara">📞</a>
+                    <a href="https://wa.me/@e164.TrimStart('+')" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary" title="WhatsApp">💬</a>
+                }
+                <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                </form>
             </div>
         </div>
     }
