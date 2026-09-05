@@ -1,9 +1,16 @@
-@model KuaforApp.Models.MuhasebeRaporViewModel
+@using KuaforApp.Models
+@model MuhasebeRaporViewModel
 @{
     ViewData["Title"] = "Muhasebe";
     var aylar = new[] { "", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
     var oncekiAy = new DateTime(Model.Yil, Model.Ay, 1).AddMonths(-1);
     var sonrakiAy = new DateTime(Model.Yil, Model.Ay, 1).AddMonths(1);
+
+    var gelirler = Model.Kayitlar.Where(k => k.GelirMi).ToList();
+    var tekSeferlikGiderler = Model.Kayitlar.Where(k => !k.GelirMi && k.Kategori?.Periyot == GiderPeriyodu.TekSeferlik).ToList();
+    var aylikSabitGiderler = Model.Kayitlar.Where(k => !k.GelirMi && k.Kategori?.Periyot == GiderPeriyodu.AylikSabit).ToList();
+
+    decimal ToplamTutar(IEnumerable<MuhasebeKaydi> kayitlar) => kayitlar.Sum(k => k.Tutar);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -45,48 +52,30 @@
 {
     <p class="text-muted">Bu ayda kayıt yok.</p>
 }
-else
-{
-    <!-- Mobil: kart görünümü -->
-    <div class="d-lg-none">
-        @foreach (var kayit in Model.Kayitlar)
-        {
-            <div class="list-card d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="list-card-title">@kayit.Kategori?.Ad</div>
-                    <div class="list-card-subtitle">@kayit.Aciklama · @kayit.Tarih.ToString("dd.MM.yyyy")</div>
-                </div>
-                <div class="fw-semibold @(kayit.GelirMi ? "text-success" : "text-danger")">
-                    @(kayit.GelirMi ? "+" : "-")@kayit.Tutar.ToString("C")
-                </div>
-            </div>
-        }
-    </div>
 
-    <!-- Masaüstü: tablo görünümü -->
-    <div class="d-none d-lg-block surface-card">
-        <table class="table table-borderless mb-0">
-            <thead>
-                <tr class="text-muted small text-uppercase">
-                    <th>Tarih</th>
-                    <th>Kategori</th>
-                    <th>Açıklama</th>
-                    <th class="text-end">Tutar</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var kayit in Model.Kayitlar)
-                {
-                    <tr>
-                        <td>@kayit.Tarih.ToString("dd.MM.yyyy")</td>
-                        <td>@kayit.Kategori?.Ad</td>
-                        <td>@kayit.Aciklama</td>
-                        <td class="text-end @(kayit.GelirMi ? "text-success" : "text-danger")">
-                            @(kayit.GelirMi ? "+" : "-")@kayit.Tutar.ToString("C")
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+@{
+    async Task Grup(string baslik, string renkClass, List<MuhasebeKaydi> kayitlar, string isaret)
+    {
+        if (!kayitlar.Any()) return;
+        <div class="surface-card mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">@baslik</h6>
+                <span class="fw-semibold @renkClass">@isaret@ToplamTutar(kayitlar).ToString("C")</span>
+            </div>
+            @foreach (var kayit in kayitlar)
+            {
+                <div class="list-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="list-card-title">@kayit.Kategori?.Ad</div>
+                        <div class="list-card-subtitle">@kayit.Aciklama · @kayit.Tarih.ToString("dd.MM.yyyy")</div>
+                    </div>
+                    <div class="fw-semibold @renkClass">@isaret@kayit.Tutar.ToString("C")</div>
+                </div>
+            }
+        </div>
+    }
 }
+
+@{ await Grup("Gelirler", "text-success", gelirler, "+"); }
+@{ await Grup("Aylık Sabit Giderler (kira, elektrik, su vb.)", "text-danger", aylikSabitGiderler, "-"); }
+@{ await Grup("Tek Seferlik Giderler (malzeme, içecek vb.)", "text-danger", tekSeferlikGiderler, "-"); }

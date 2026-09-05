@@ -38,7 +38,8 @@ public class MuhasebeKategorilerController : Controller
         {
             TenantId = _currentTenant.TenantId!.Value,
             Ad = model.Ad,
-            Tur = model.Tur
+            Tur = model.Tur,
+            Periyot = model.Tur == IslemTuru.Gider ? model.Periyot : GiderPeriyodu.TekSeferlik
         };
 
         _context.MuhasebeKategorileri.Add(kategori);

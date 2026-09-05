@@ -9,6 +9,15 @@ public enum IslemTuru
     Gider
 }
 
+public enum GiderPeriyodu
+{
+    /// <summary>İçecek, malzeme gibi tek seferlik/günlük giderler.</summary>
+    TekSeferlik,
+
+    /// <summary>Elektrik, su, kira gibi her ay tekrar eden sabit giderler.</summary>
+    AylikSabit
+}
+
 public class MuhasebeKategorisi : ITenantScoped
 {
     public int Id { get; set; }
@@ -19,4 +28,7 @@ public class MuhasebeKategorisi : ITenantScoped
 
     [Required]
     public IslemTuru Tur { get; set; }
+
+    /// <summary>Sadece Tur=Gider için anlamlıdır. Gelir kategorilerinde kullanılmaz.</summary>
+    public GiderPeriyodu Periyot { get; set; } = GiderPeriyodu.TekSeferlik;
 }

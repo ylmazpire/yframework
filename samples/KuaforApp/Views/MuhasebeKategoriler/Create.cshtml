@@ -10,12 +10,20 @@
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="mb-3">
             <label asp-for="Ad" class="form-label"></label>
-            <input asp-for="Ad" class="form-control" />
+            <input asp-for="Ad" class="form-control" placeholder="Örn. Elektrik Faturası, İçecek" />
             <span asp-validation-for="Ad" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Tur" class="form-label">Tür</label>
-            <select asp-for="Tur" class="form-select" asp-items="Html.GetEnumSelectList<KuaforApp.Models.IslemTuru>()"></select>
+            <select asp-for="Tur" id="turSelect" class="form-select" asp-items="Html.GetEnumSelectList<KuaforApp.Models.IslemTuru>()"></select>
+        </div>
+        <div class="mb-3" id="periyotAlani">
+            <label asp-for="Periyot" class="form-label">Gider Periyodu</label>
+            <select asp-for="Periyot" class="form-select" asp-items="Html.GetEnumSelectList<KuaforApp.Models.GiderPeriyodu>()"></select>
+            <div class="form-text text-muted">
+                <strong>Tek Seferlik:</strong> içecek, malzeme gibi düzensiz giderler ·
+                <strong>Aylık Sabit:</strong> elektrik, su, kira gibi her ay tekrar eden giderler
+            </div>
         </div>
         <button type="submit" class="btn btn-primary">Kaydet</button>
         <a asp-action="Index" class="btn btn-secondary">İptal</a>
@@ -24,4 +32,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        (function () {
+            var turSelect = document.getElementById('turSelect');
+            var periyotAlani = document.getElementById('periyotAlani');
+
+            function guncelle() {
+                // IslemTuru: Gelir = 0, Gider = 1
+                periyotAlani.hidden = turSelect.value !== '1';
+            }
+
+            turSelect.addEventListener('change', guncelle);
+            guncelle();
+        })();
+    </script>
 }

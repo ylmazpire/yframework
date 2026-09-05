@@ -9,19 +9,30 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-4">
         <div class="surface-card">
-            <h6 class="text-success mb-3">Gelir Kategorileri</h6>
+            <h6 class="text-success mb-3">Gelir</h6>
             @foreach (var kategori in Model.Where(k => k.Tur == KuaforApp.Models.IslemTuru.Gelir))
             {
                 <div class="list-card">@kategori.Ad</div>
             }
         </div>
     </div>
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-4">
         <div class="surface-card">
-            <h6 class="text-danger mb-3">Gider Kategorileri</h6>
-            @foreach (var kategori in Model.Where(k => k.Tur == KuaforApp.Models.IslemTuru.Gider))
+            <h6 class="text-danger mb-3">Tek Seferlik Gider</h6>
+            <div class="text-muted small mb-2">İçecek, malzeme gibi düzensiz giderler</div>
+            @foreach (var kategori in Model.Where(k => k.Tur == KuaforApp.Models.IslemTuru.Gider && k.Periyot == KuaforApp.Models.GiderPeriyodu.TekSeferlik))
+            {
+                <div class="list-card">@kategori.Ad</div>
+            }
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="surface-card">
+            <h6 class="text-danger mb-3">Aylık Sabit Gider</h6>
+            <div class="text-muted small mb-2">Elektrik, su, kira gibi her ay tekrar eden giderler</div>
+            @foreach (var kategori in Model.Where(k => k.Tur == KuaforApp.Models.IslemTuru.Gider && k.Periyot == KuaforApp.Models.GiderPeriyodu.AylikSabit))
             {
                 <div class="list-card">@kategori.Ad</div>
             }

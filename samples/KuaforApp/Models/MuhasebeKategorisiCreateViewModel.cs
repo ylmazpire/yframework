@@ -9,4 +9,6 @@ public class MuhasebeKategorisiCreateViewModel
 
     [Required]
     public IslemTuru Tur { get; set; }
+
+    public GiderPeriyodu Periyot { get; set; } = GiderPeriyodu.TekSeferlik;
 }
