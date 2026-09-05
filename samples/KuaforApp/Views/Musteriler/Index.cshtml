@@ -13,9 +13,15 @@
     <div class="alert alert-danger">@hata</div>
 }
 
+<form method="get" class="mb-3">
+    <input type="search" name="ara" value="@ViewData["Ara"]" class="form-control" placeholder="İsim veya telefon ara..." />
+</form>
+
 @if (!Model.Any())
 {
-    <p class="text-muted">Henüz müşteri eklenmemiş.</p>
+    <p class="text-muted">
+        @(string.IsNullOrWhiteSpace(ViewData["Ara"] as string) ? "Henüz müşteri eklenmemiş." : "Aramanla eşleşen müşteri bulunamadı.")
+    </p>
 }
 
 <!-- Mobil: kart görünümü -->

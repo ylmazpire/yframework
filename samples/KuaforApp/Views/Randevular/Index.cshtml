@@ -25,9 +25,29 @@
     </div>
 </div>
 
+@{
+    var filtre = ViewData["Filtre"] as string ?? "yaklasan";
+}
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+    <a asp-action="Index" asp-route-filtre="yaklasan" asp-route-ara="@ViewData["Ara"]"
+       class="btn btn-sm @(filtre == "yaklasan" ? "btn-primary" : "btn-outline-secondary")">Yaklaşan</a>
+    <a asp-action="Index" asp-route-filtre="gecmis" asp-route-ara="@ViewData["Ara"]"
+       class="btn btn-sm @(filtre == "gecmis" ? "btn-primary" : "btn-outline-secondary")">Geçmiş</a>
+    <a asp-action="Index" asp-route-filtre="tumu" asp-route-ara="@ViewData["Ara"]"
+       class="btn btn-sm @(filtre == "tumu" ? "btn-primary" : "btn-outline-secondary")">Tümü</a>
+</div>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="filtre" value="@filtre" />
+    <input type="search" name="ara" value="@ViewData["Ara"]" class="form-control" placeholder="Müşteri adına göre ara..." />
+</form>
+
 @if (!Model.Any())
 {
-    <p class="text-muted">Henüz randevu eklenmemiş.</p>
+    <p class="text-muted">
+        @(string.IsNullOrWhiteSpace(ViewData["Ara"] as string) ? "Bu filtrede randevu yok." : "Aramanla eşleşen randevu bulunamadı.")
+    </p>
 }
 
 <!-- Mobil: kart görünümü -->

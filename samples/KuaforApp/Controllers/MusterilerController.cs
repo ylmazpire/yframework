@@ -20,9 +20,17 @@ public class MusterilerController : Controller
         _currentTenant = currentTenant;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? ara)
     {
-        var musteriler = await _context.Musteriler.OrderBy(m => m.AdSoyad).ToListAsync();
+        var sorgu = _context.Musteriler.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(ara))
+        {
+            sorgu = sorgu.Where(m => m.AdSoyad.Contains(ara) || m.Telefon.Contains(ara));
+        }
+
+        ViewData["Ara"] = ara;
+        var musteriler = await sorgu.OrderBy(m => m.AdSoyad).ToListAsync();
         return View(musteriler);
     }
 

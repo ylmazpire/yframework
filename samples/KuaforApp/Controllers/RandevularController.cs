@@ -25,13 +25,33 @@ public class RandevularController : Controller
         _currentTenant = currentTenant;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? ara, string filtre = "yaklasan")
     {
-        var randevular = await _context.Randevular
+        var sorgu = _context.Randevular
             .Include(r => r.Musteri)
             .Include(r => r.Hizmet)
-            .OrderBy(r => r.BaslangicZamani)
-            .ToListAsync();
+            .AsQueryable();
+
+        var bugun = DateTime.Today;
+        sorgu = filtre switch
+        {
+            "gecmis" => sorgu.Where(r => r.BaslangicZamani < bugun),
+            "tumu" => sorgu,
+            _ => sorgu.Where(r => r.BaslangicZamani >= bugun)
+        };
+
+        if (!string.IsNullOrWhiteSpace(ara))
+        {
+            sorgu = sorgu.Where(r => r.Musteri != null && r.Musteri.AdSoyad.Contains(ara));
+        }
+
+        var siralama = filtre == "gecmis"
+            ? sorgu.OrderByDescending(r => r.BaslangicZamani)
+            : sorgu.OrderBy(r => r.BaslangicZamani);
+
+        ViewData["Ara"] = ara;
+        ViewData["Filtre"] = filtre;
+        var randevular = await siralama.ToListAsync();
         return View(randevular);
     }
 

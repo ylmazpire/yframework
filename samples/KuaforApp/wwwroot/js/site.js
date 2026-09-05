@@ -24,3 +24,16 @@
         }
     });
 })();
+
+// Arama kutuları: yazarken 400ms bekleyip otomatik olarak formu gönderir (sayfayı yeniler).
+(function () {
+    var timer = null;
+    document.addEventListener("input", function (e) {
+        if (e.target && e.target.matches("input[type=search][name=ara]")) {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                e.target.form.submit();
+            }, 400);
+        }
+    });
+})();
