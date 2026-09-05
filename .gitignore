@@ -6,6 +6,11 @@
 # dotenv files
 .env
 
+# SQLite local databases
+*.db
+*.db-shm
+*.db-wal
+
 # User-specific files
 *.rsuser
 *.suo
