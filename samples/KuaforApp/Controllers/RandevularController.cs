@@ -185,6 +185,35 @@ public class RandevularController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GunSonu(DateTime? tarih)
+    {
+        var secilenGun = (tarih ?? DateTime.Today).Date;
+        var ertesiGun = secilenGun.AddDays(1);
+
+        var randevular = await _context.Randevular
+            .Include(r => r.Musteri)
+            .Include(r => r.Hizmet)
+            .Where(r => r.BaslangicZamani >= secilenGun && r.BaslangicZamani < ertesiGun)
+            .OrderBy(r => r.BaslangicZamani)
+            .ToListAsync();
+
+        var model = new GunSonuViewModel
+        {
+            Tarih = secilenGun,
+            ToplamRandevu = randevular.Count,
+            TamamlananSayisi = randevular.Count(r => r.Durum == RandevuDurumu.Tamamlandi),
+            IptalSayisi = randevular.Count(r => r.Durum == RandevuDurumu.IptalEdildi),
+            PlanliKalanSayisi = randevular.Count(r => r.Durum == RandevuDurumu.Planlandi),
+            ToplamKazanc = randevular
+                .Where(r => r.Durum == RandevuDurumu.Tamamlandi)
+                .Sum(r => r.Hizmet?.Fiyat ?? 0),
+            Randevular = randevular
+        };
+
+        return View(model);
+    }
+
     private async Task<RandevuCreateViewModel> BuildViewModelAsync(RandevuCreateViewModel model)
     {
         model.Musteriler = await _context.Musteriler
