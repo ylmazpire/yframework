@@ -1,9 +1,35 @@
 @model KuaforApp.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Ana Sayfa";
+    var net = Model.BuAyOzeti.Net;
+    var netClass = net >= 0 ? "positive" : "negative";
+    var aylar = new[] { "", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
 }
 
-<h2 class="mb-3">Merhaba 👋</h2>
+<div class="hero-card mb-4">
+    <div class="hero-label">@aylar[DateTime.Today.Month] Ayı Net Kazanç</div>
+    <div class="hero-value">@net.ToString("C")</div>
+    <div class="hero-sub">
+        <span class="positive">+@Model.BuAyOzeti.ToplamGelir.ToString("C")</span>
+        &nbsp;·&nbsp;
+        <span class="negative">-@Model.BuAyOzeti.ToplamGider.ToString("C")</span>
+    </div>
+</div>
+
+<div class="quick-nav mb-4">
+    <a asp-controller="Randevular" asp-action="Index">
+        <span class="icon">📅</span>Randevular
+    </a>
+    <a asp-controller="Musteriler" asp-action="Index">
+        <span class="icon">👥</span>Müşteriler
+    </a>
+    <a asp-controller="Hizmetler" asp-action="Index">
+        <span class="icon">💈</span>Hizmetler
+    </a>
+    <a asp-controller="Muhasebe" asp-action="Index">
+        <span class="icon">💰</span>Muhasebe
+    </a>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
@@ -33,7 +59,7 @@
 </div>
 
 <div class="surface-card">
-    <h5 class="mb-3">Bugünkü Randevular</h5>
+    <h6 class="mb-3">Bugünkü Randevular</h6>
     @if (!Model.BugunkuRandevular.Any())
     {
         <p class="text-muted mb-0">Bugün için planlanmış randevu yok.</p>

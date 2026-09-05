@@ -4,6 +4,7 @@ using KuaforApp.Data;
 using KuaforApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using YFramework.Reporting;
 
 namespace KuaforApp.Controllers;
 
@@ -33,8 +34,14 @@ public class HomeController : Controller
         var yarin = bugun.AddDays(1);
         var haftaSonu = bugun.AddDays(7);
 
+        var buAyKayitlari = await _context.MuhasebeKayitlari
+            .Include(k => k.Kategori)
+            .Where(k => k.Tarih.Year == bugun.Year && k.Tarih.Month == bugun.Month)
+            .ToListAsync();
+
         var model = new DashboardViewModel
         {
+            BuAyOzeti = FinancialSummaryCalculator.Ozet(buAyKayitlari),
             ToplamMusteriSayisi = await _context.Musteriler.CountAsync(),
             ToplamHizmetSayisi = await _context.Hizmetler.CountAsync(),
             BugunkuRandevuSayisi = await _context.Randevular
