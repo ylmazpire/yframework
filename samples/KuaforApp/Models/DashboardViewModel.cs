@@ -10,4 +10,5 @@ public class DashboardViewModel
     public int ToplamHizmetSayisi { get; set; }
     public FinancialSummary BuAyOzeti { get; set; } = new(0, 0);
     public List<Randevu> BugunkuRandevular { get; set; } = new();
+    public List<AylikTrendNoktasi> AylikTrend { get; set; } = new();
 }

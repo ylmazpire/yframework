@@ -39,6 +39,8 @@ public class HomeController : Controller
             .Where(k => k.Tarih.Year == bugun.Year && k.Tarih.Month == bugun.Month)
             .ToListAsync();
 
+        var aylikTrend = await BuildAylikTrendAsync(bugun);
+
         var model = new DashboardViewModel
         {
             BuAyOzeti = FinancialSummaryCalculator.Ozet(buAyKayitlari),
@@ -53,10 +55,37 @@ public class HomeController : Controller
                 .Include(r => r.Hizmet)
                 .Where(r => r.BaslangicZamani >= bugun && r.BaslangicZamani < yarin && r.Durum != RandevuDurumu.IptalEdildi)
                 .OrderBy(r => r.BaslangicZamani)
-                .ToListAsync()
+                .ToListAsync(),
+            AylikTrend = aylikTrend
         };
 
         return View(model);
+    }
+
+    private async Task<List<AylikTrendNoktasi>> BuildAylikTrendAsync(DateTime bugun)
+    {
+        var aylar = new[] { "", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara" };
+
+        var baslangicAy = new DateTime(bugun.Year, bugun.Month, 1).AddMonths(-5);
+        var kayitlar = await _context.MuhasebeKayitlari
+            .Include(k => k.Kategori)
+            .Where(k => k.Tarih >= baslangicAy)
+            .ToListAsync();
+
+        var sonuc = new List<AylikTrendNoktasi>();
+        for (var i = 0; i < 6; i++)
+        {
+            var ay = baslangicAy.AddMonths(i);
+            var ozet = FinancialSummaryCalculator.AylikOzet(kayitlar, ay.Year, ay.Month);
+            sonuc.Add(new AylikTrendNoktasi
+            {
+                AyEtiketi = $"{aylar[ay.Month]} {ay.Year % 100:D2}",
+                Gelir = ozet.ToplamGelir,
+                Gider = ozet.ToplamGider
+            });
+        }
+
+        return sonuc;
     }
 
     public IActionResult Privacy()

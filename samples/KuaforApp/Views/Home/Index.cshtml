@@ -1,3 +1,4 @@
+@using System.Text.Json
 @using YFramework.Formatting
 @model KuaforApp.Models.DashboardViewModel
 @{
@@ -5,6 +6,10 @@
     var net = Model.BuAyOzeti.Net;
     var netClass = net >= 0 ? "positive" : "negative";
     var aylar = new[] { "", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
+
+    var trendEtiketleri = JsonSerializer.Serialize(Model.AylikTrend.Select(t => t.AyEtiketi));
+    var trendGelir = JsonSerializer.Serialize(Model.AylikTrend.Select(t => t.Gelir));
+    var trendGider = JsonSerializer.Serialize(Model.AylikTrend.Select(t => t.Gider));
 }
 
 <div class="hero-card mb-4">
@@ -62,6 +67,11 @@
     </div>
 </div>
 
+<div class="surface-card mb-4">
+    <h6 class="mb-3">Son 6 Ay Gelir/Gider</h6>
+    <canvas id="trendGrafik" height="200"></canvas>
+</div>
+
 <div class="surface-card">
     <h6 class="mb-3">Bugünkü Randevular</h6>
     @if (!Model.BugunkuRandevular.Any())
@@ -85,3 +95,40 @@
         }
     }
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            var ctx = document.getElementById('trendGrafik');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(trendEtiketleri),
+                    datasets: [
+                        {
+                            label: 'Gelir',
+                            data: @Html.Raw(trendGelir),
+                            backgroundColor: '#32d74b'
+                        },
+                        {
+                            label: 'Gider',
+                            data: @Html.Raw(trendGider),
+                            backgroundColor: '#ff073a'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#98989f' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#98989f' }, grid: { color: '#2c2c2e' } },
+                        y: { ticks: { color: '#98989f' }, grid: { color: '#2c2c2e' }, beginAtZero: true }
+                    }
+                }
+            });
+        })();
+    </script>
+}
