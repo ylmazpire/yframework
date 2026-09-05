@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/KuaforApp/KuaforApp.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/YFramework/YFramework.csproj" />
+  </Folder>
+</Solution>
