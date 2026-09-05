@@ -1,10 +1,10 @@
 using KuaforApp.Models;
 using Microsoft.EntityFrameworkCore;
-using YFramework.Data;
+using YFramework.Auth;
 
 namespace KuaforApp.Data;
 
-public class AppDbContext : YFrameworkDbContext
+public class AppDbContext : YFrameworkIdentityDbContext<ApplicationUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
