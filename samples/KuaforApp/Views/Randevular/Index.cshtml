@@ -1,17 +1,67 @@
 @model List<KuaforApp.Models.Randevu>
 @{
     ViewData["Title"] = "Randevular";
+
+    string DurumBadgeClass(KuaforApp.Models.RandevuDurumu durum) => durum switch
+    {
+        KuaforApp.Models.RandevuDurumu.Planlandi => "bg-primary",
+        KuaforApp.Models.RandevuDurumu.Tamamlandi => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    string DurumMetni(KuaforApp.Models.RandevuDurumu durum) => durum switch
+    {
+        KuaforApp.Models.RandevuDurumu.Planlandi => "Planlandı",
+        KuaforApp.Models.RandevuDurumu.Tamamlandi => "Tamamlandı",
+        _ => "İptal Edildi"
+    };
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Randevular</h2>
+    <h2 class="mb-0">Randevular</h2>
     <a asp-action="Create" class="btn btn-primary">+ Yeni Randevu</a>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped">
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz randevu eklenmemiş.</p>
+}
+
+<!-- Mobil: kart görünümü -->
+<div class="d-lg-none">
+    @foreach (var randevu in Model)
+    {
+        <div class="list-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="list-card-title">@randevu.Musteri?.AdSoyad</div>
+                    <div class="list-card-subtitle">@randevu.Hizmet?.Ad</div>
+                </div>
+                <span class="badge @DurumBadgeClass(randevu.Durum)">@DurumMetni(randevu.Durum)</span>
+            </div>
+            <div class="mt-2 small text-muted">
+                @randevu.BaslangicZamani.ToString("dd.MM.yyyy HH:mm") - @randevu.BitisZamani.ToString("HH:mm")
+            </div>
+            @if (randevu.Durum == KuaforApp.Models.RandevuDurumu.Planlandi)
+            {
+                <div class="mt-2 d-flex gap-2">
+                    <form asp-action="Tamamlandi" asp-route-id="@randevu.Id" method="post">
+                        <button type="submit" class="btn btn-sm btn-success">Tamamlandı</button>
+                    </form>
+                    <form asp-action="Iptal" asp-route-id="@randevu.Id" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Masaüstü: tablo görünümü -->
+<div class="d-none d-lg-block surface-card">
+    <table class="table table-borderless mb-0 align-middle">
         <thead>
-            <tr>
+            <tr class="text-muted small text-uppercase">
                 <th>Müşteri</th>
                 <th>Hizmet</th>
                 <th>Başlangıç</th>
@@ -28,20 +78,7 @@
                     <td>@randevu.Hizmet?.Ad</td>
                     <td>@randevu.BaslangicZamani.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@randevu.BitisZamani.ToString("HH:mm")</td>
-                    <td>
-                        @switch (randevu.Durum)
-                        {
-                            case KuaforApp.Models.RandevuDurumu.Planlandi:
-                                <span class="badge bg-primary">Planlandı</span>
-                                break;
-                            case KuaforApp.Models.RandevuDurumu.Tamamlandi:
-                                <span class="badge bg-success">Tamamlandı</span>
-                                break;
-                            case KuaforApp.Models.RandevuDurumu.IptalEdildi:
-                                <span class="badge bg-secondary">İptal Edildi</span>
-                                break;
-                        }
-                    </td>
+                    <td><span class="badge @DurumBadgeClass(randevu.Durum)">@DurumMetni(randevu.Durum)</span></td>
                     <td>
                         @if (randevu.Durum == KuaforApp.Models.RandevuDurumu.Planlandi)
                         {

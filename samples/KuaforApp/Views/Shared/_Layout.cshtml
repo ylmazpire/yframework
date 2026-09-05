@@ -1,8 +1,12 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+@{
+    bool isAdmin = User.IsInRole("Admin");
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>@ViewData["Title"] - KuaforApp</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -10,72 +14,68 @@
     <link rel="stylesheet" href="~/KuaforApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KuaforApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
-                        </li>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Randevular" asp-action="Index">Randevular</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Musteriler" asp-action="Index">Müşteriler</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Hizmetler" asp-action="Index">Hizmetler</a>
-                            </li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item d-flex align-items-center me-2">
-                                <span class="text-dark">Merhaba, @User.Identity.Name</span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Çıkış Yap</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
-                            </li>
-                        }
-                    </ul>
+    <div class="app-shell">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <aside class="app-sidebar">
+                <a class="brand" asp-controller="Home" asp-action="Index">✂ KuaforApp</a>
+                <nav class="nav flex-column">
+                    <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Ana Sayfa</a>
+                    @if (isAdmin)
+                    {
+                        <a class="nav-link @(currentController == "Randevular" ? "active" : "")" asp-controller="Randevular" asp-action="Index">📅 Randevular</a>
+                        <a class="nav-link @(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">👥 Müşteriler</a>
+                        <a class="nav-link @(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">💈 Hizmetler</a>
+                    }
+                </nav>
+                <div class="mt-auto pt-3">
+                    <div class="text-muted small mb-2 px-2">@User.Identity!.Name</div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-link nav-link w-100 text-start px-2">🚪 Çıkış Yap</button>
+                    </form>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            </aside>
+        }
+        <div class="app-main">
+            <header class="app-topbar">
+                <a class="brand-mobile" asp-controller="Home" asp-action="Index">✂ KuaforApp</a>
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <div>
+                        <a class="btn btn-sm btn-outline-primary me-2" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                        <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
+                    </div>
+                }
+                else
+                {
+                    <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                }
+            </header>
+
+            <main class="app-content">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - KuaforApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    @if (User.Identity?.IsAuthenticated == true && isAdmin)
+    {
+        <nav class="app-bottom-nav">
+            <a class="@(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                <span class="icon">🏠</span>Ana Sayfa
+            </a>
+            <a class="@(currentController == "Randevular" ? "active" : "")" asp-controller="Randevular" asp-action="Index">
+                <span class="icon">📅</span>Randevular
+            </a>
+            <a class="@(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">
+                <span class="icon">👥</span>Müşteriler
+            </a>
+            <a class="@(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">
+                <span class="icon">💈</span>Hizmetler
+            </a>
+        </nav>
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
