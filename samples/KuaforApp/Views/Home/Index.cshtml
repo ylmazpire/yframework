@@ -1,3 +1,4 @@
+@using YFramework.Formatting
 @model KuaforApp.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Ana Sayfa";
@@ -8,11 +9,11 @@
 
 <div class="hero-card mb-4">
     <div class="hero-label">@aylar[DateTime.Today.Month] Ayı Net Kazanç</div>
-    <div class="hero-value">@net.ToString("C")</div>
+    <div class="hero-value">@TurkishCurrencyFormatter.Format(net)</div>
     <div class="hero-sub">
-        <span class="positive">+@Model.BuAyOzeti.ToplamGelir.ToString("C")</span>
+        <span class="positive">+@TurkishCurrencyFormatter.Format(Model.BuAyOzeti.ToplamGelir)</span>
         &nbsp;·&nbsp;
-        <span class="negative">-@Model.BuAyOzeti.ToplamGider.ToString("C")</span>
+        <span class="negative">-@TurkishCurrencyFormatter.Format(Model.BuAyOzeti.ToplamGider)</span>
     </div>
 </div>
 

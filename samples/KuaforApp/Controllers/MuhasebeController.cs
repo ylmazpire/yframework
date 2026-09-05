@@ -45,6 +45,30 @@ public class MuhasebeController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Export(int yil, int ay)
+    {
+        var kayitlar = await _context.MuhasebeKayitlari
+            .Include(k => k.Kategori)
+            .Where(k => k.Tarih.Year == yil && k.Tarih.Month == ay)
+            .OrderBy(k => k.Tarih)
+            .ToListAsync();
+
+        var basliklar = new[] { "Tarih", "Tür", "Kategori", "Açıklama", "Tutar" };
+        var satirlar = kayitlar.Select(k => new[]
+        {
+            k.Tarih.ToString("dd.MM.yyyy"),
+            k.GelirMi ? "Gelir" : "Gider",
+            k.Kategori?.Ad ?? "",
+            k.Aciklama,
+            k.Tutar.ToString("F2")
+        });
+
+        var csv = CsvExporter.ToCsv(basliklar, satirlar);
+        var dosyaAdi = $"muhasebe_{yil}_{ay:D2}.csv";
+        return File(csv, "text/csv", dosyaAdi);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Create()
     {
         return View(await BuildViewModelAsync(new MuhasebeCreateViewModel()));

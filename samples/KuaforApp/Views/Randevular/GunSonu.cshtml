@@ -1,8 +1,11 @@
+@using System.Globalization
+@using YFramework.Formatting
 @model KuaforApp.Models.GunSonuViewModel
 @{
     ViewData["Title"] = "Gün Sonu Özeti";
     var oncekiGun = Model.Tarih.AddDays(-1);
     var sonrakiGun = Model.Tarih.AddDays(1);
+    var trTr = CultureInfo.GetCultureInfo("tr-TR");
 
     string DurumBadgeClass(KuaforApp.Models.RandevuDurumu durum) => durum switch
     {
@@ -26,13 +29,13 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <a class="btn btn-sm btn-outline-secondary" asp-action="GunSonu" asp-route-tarih="@oncekiGun.ToString("yyyy-MM-dd")">← Önceki Gün</a>
-    <h5 class="mb-0">@Model.Tarih.ToString("dd.MM.yyyy dddd")</h5>
+    <h5 class="mb-0">@Model.Tarih.ToString("dd.MM.yyyy dddd", trTr)</h5>
     <a class="btn btn-sm btn-outline-secondary" asp-action="GunSonu" asp-route-tarih="@sonrakiGun.ToString("yyyy-MM-dd")">Sonraki Gün →</a>
 </div>
 
 <div class="hero-card mb-4">
     <div class="hero-label">Bugünkü Kazanç (tamamlanan randevular)</div>
-    <div class="hero-value">@Model.ToplamKazanc.ToString("C")</div>
+    <div class="hero-value">@TurkishCurrencyFormatter.Format(Model.ToplamKazanc)</div>
     <div class="hero-sub">
         <span class="positive">@Model.TamamlananSayisi tamamlandı</span>
         &nbsp;·&nbsp;

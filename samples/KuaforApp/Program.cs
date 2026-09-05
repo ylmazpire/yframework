@@ -1,7 +1,9 @@
+using System.Globalization;
 using KuaforApp;
 using KuaforApp.Data;
 using KuaforApp.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using YFramework.Auth;
 using YFramework.MultiTenancy;
@@ -44,6 +46,17 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Form/URL'den gelen sayıları her zaman değişmez (InvariantCulture) formatta yorumla —
+// aksi halde sunucunun işletim sistemi Türkçe locale kullanırsa, HTML5 "number" input'larının
+// her zaman nokta ile gönderdiği ondalık değerler (örn. "45.50") yanlış parse edilir (4550 gibi).
+// Ekranda para gösterimi için ayrıca YFramework.Formatting.TurkishCurrencyFormatter kullanılıyor.
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(CultureInfo.InvariantCulture),
+    SupportedCultures = new List<CultureInfo> { CultureInfo.InvariantCulture },
+    SupportedUICultures = new List<CultureInfo> { CultureInfo.InvariantCulture }
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();

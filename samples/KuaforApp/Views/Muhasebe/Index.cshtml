@@ -1,4 +1,5 @@
 @using KuaforApp.Models
+@using YFramework.Formatting
 @model MuhasebeRaporViewModel
 @{
     ViewData["Title"] = "Muhasebe";
@@ -15,8 +16,9 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <h2 class="mb-0">Muhasebe</h2>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap">
         <a asp-controller="MuhasebeKategoriler" asp-action="Index" class="btn btn-outline-secondary">Kategoriler</a>
+        <a asp-action="Export" asp-route-yil="@Model.Yil" asp-route-ay="@Model.Ay" class="btn btn-outline-secondary">⬇ CSV İndir</a>
         <a asp-action="Create" class="btn btn-primary">+ Yeni Kayıt</a>
     </div>
 </div>
@@ -30,19 +32,19 @@
 <div class="row g-3 mb-4">
     <div class="col-4">
         <div class="stat-card">
-            <div class="stat-value text-success">@Model.Ozet.ToplamGelir.ToString("C")</div>
+            <div class="stat-value text-success">@TurkishCurrencyFormatter.Format(Model.Ozet.ToplamGelir)</div>
             <div class="stat-label">Gelir</div>
         </div>
     </div>
     <div class="col-4">
         <div class="stat-card">
-            <div class="stat-value text-danger">@Model.Ozet.ToplamGider.ToString("C")</div>
+            <div class="stat-value text-danger">@TurkishCurrencyFormatter.Format(Model.Ozet.ToplamGider)</div>
             <div class="stat-label">Gider</div>
         </div>
     </div>
     <div class="col-4">
         <div class="stat-card">
-            <div class="stat-value">@Model.Ozet.Net.ToString("C")</div>
+            <div class="stat-value">@TurkishCurrencyFormatter.Format(Model.Ozet.Net)</div>
             <div class="stat-label">Net</div>
         </div>
     </div>
@@ -60,7 +62,7 @@
         <div class="surface-card mb-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="mb-0">@baslik</h6>
-                <span class="fw-semibold @renkClass">@isaret@ToplamTutar(kayitlar).ToString("C")</span>
+                <span class="fw-semibold @renkClass">@isaret@TurkishCurrencyFormatter.Format(ToplamTutar(kayitlar))</span>
             </div>
             @foreach (var kayit in kayitlar)
             {
@@ -69,7 +71,7 @@
                         <div class="list-card-title">@kayit.Kategori?.Ad</div>
                         <div class="list-card-subtitle">@kayit.Aciklama · @kayit.Tarih.ToString("dd.MM.yyyy")</div>
                     </div>
-                    <div class="fw-semibold @renkClass">@isaret@kayit.Tutar.ToString("C")</div>
+                    <div class="fw-semibold @renkClass">@isaret@TurkishCurrencyFormatter.Format(kayit.Tutar)</div>
                 </div>
             }
         </div>
