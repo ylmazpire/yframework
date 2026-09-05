@@ -24,13 +24,20 @@ public class HizmetlerController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create() => View(new Hizmet());
+    public IActionResult Create() => View(new HizmetCreateViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Hizmet hizmet)
+    public async Task<IActionResult> Create(HizmetCreateViewModel model)
     {
-        if (!ModelState.IsValid) return View(hizmet);
+        if (!ModelState.IsValid) return View(model);
+
+        var hizmet = new Hizmet
+        {
+            Ad = model.Ad,
+            SureDakika = model.SureDakika,
+            Fiyat = model.Fiyat
+        };
 
         _context.Hizmetler.Add(hizmet);
         await _context.SaveChangesAsync();

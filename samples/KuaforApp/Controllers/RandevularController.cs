@@ -1,3 +1,4 @@
+using System.Data;
 using KuaforApp.Data;
 using KuaforApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,12 @@ namespace KuaforApp.Controllers;
 public class RandevularController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<RandevularController> _logger;
 
-    public RandevularController(AppDbContext context)
+    public RandevularController(AppDbContext context, ILogger<RandevularController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -49,12 +52,28 @@ public class RandevularController : Controller
             return View(await BuildViewModelAsync(model));
         }
 
+        var musteriVarMi = await _context.Musteriler.AnyAsync(m => m.Id == model.MusteriId);
+        if (!musteriVarMi)
+        {
+            ModelState.AddModelError(string.Empty, "Seçilen müşteri bulunamadı.");
+            return View(await BuildViewModelAsync(model));
+        }
+
         var yeniBaslangic = model.BaslangicZamani;
         var yeniBitis = yeniBaslangic.AddMinutes(hizmet.SureDakika);
 
+        // En uzun hizmet süresi (480 dk) kadar geriye bakarak çakışma penceresini daraltıyoruz.
+        var pencereBaslangic = yeniBaslangic.AddMinutes(-480);
+
+        // Serializable izolasyon: kontrol + ekleme aynı transaction içinde, aradaki yarış durumunu
+        // (iki eşzamanlı istek aynı saate randevu almaya çalışması) engellemek için.
+        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
         var mevcutRandevular = await _context.Randevular
             .Include(r => r.Hizmet)
-            .Where(r => r.Durum != RandevuDurumu.IptalEdildi)
+            .Where(r => r.Durum != RandevuDurumu.IptalEdildi
+                        && r.BaslangicZamani >= pencereBaslangic
+                        && r.BaslangicZamani <= yeniBitis)
             .ToListAsync();
 
         var cakisiyorMu = mevcutRandevular.Any(r =>
@@ -62,6 +81,7 @@ public class RandevularController : Controller
 
         if (cakisiyorMu)
         {
+            await transaction.RollbackAsync();
             ModelState.AddModelError(string.Empty, "Bu zaman aralığında başka bir randevu var. Lütfen farklı bir saat seçin.");
             return View(await BuildViewModelAsync(model));
         }
@@ -76,6 +96,7 @@ public class RandevularController : Controller
 
         _context.Randevular.Add(randevu);
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
         return RedirectToAction(nameof(Index));
     }
 
@@ -119,6 +140,12 @@ public class RandevularController : Controller
                     Tarih = randevu.BaslangicZamani.Date,
                     RandevuId = randevu.Id
                 });
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "\"Randevu Geliri\" kategorisi bulunamadığı için randevu {RandevuId} tamamlandı ama gelir kaydı oluşturulmadı.",
+                    randevu.Id);
             }
         }
 

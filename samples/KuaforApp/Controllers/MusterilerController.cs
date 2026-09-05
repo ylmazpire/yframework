@@ -24,13 +24,19 @@ public class MusterilerController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create() => View(new Musteri());
+    public IActionResult Create() => View(new MusteriCreateViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Musteri musteri)
+    public async Task<IActionResult> Create(MusteriCreateViewModel model)
     {
-        if (!ModelState.IsValid) return View(musteri);
+        if (!ModelState.IsValid) return View(model);
+
+        var musteri = new Musteri
+        {
+            AdSoyad = model.AdSoyad,
+            Telefon = model.Telefon
+        };
 
         _context.Musteriler.Add(musteri);
         await _context.SaveChangesAsync();

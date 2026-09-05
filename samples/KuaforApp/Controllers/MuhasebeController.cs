@@ -22,8 +22,8 @@ public class MuhasebeController : Controller
     public async Task<IActionResult> Index(int? yil, int? ay)
     {
         var simdi = DateTime.Today;
-        var seciliYil = yil ?? simdi.Year;
-        var seciliAy = ay ?? simdi.Month;
+        var seciliYil = Math.Clamp(yil ?? simdi.Year, 2000, 2100);
+        var seciliAy = Math.Clamp(ay ?? simdi.Month, 1, 12);
 
         var kayitlar = await _context.MuhasebeKayitlari
             .Include(k => k.Kategori)

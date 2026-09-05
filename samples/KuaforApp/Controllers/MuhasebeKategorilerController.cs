@@ -24,13 +24,19 @@ public class MuhasebeKategorilerController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create() => View(new MuhasebeKategorisi());
+    public IActionResult Create() => View(new MuhasebeKategorisiCreateViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(MuhasebeKategorisi kategori)
+    public async Task<IActionResult> Create(MuhasebeKategorisiCreateViewModel model)
     {
-        if (!ModelState.IsValid) return View(kategori);
+        if (!ModelState.IsValid) return View(model);
+
+        var kategori = new MuhasebeKategorisi
+        {
+            Ad = model.Ad,
+            Tur = model.Tur
+        };
 
         _context.MuhasebeKategorileri.Add(kategori);
         await _context.SaveChangesAsync();
