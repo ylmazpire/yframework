@@ -5,6 +5,7 @@ namespace KuaforApp.Models;
 public class HizmetCreateViewModel
 {
     [Required(ErrorMessage = "Hizmet adı zorunludur.")]
+    [StringLength(100)]
     public string Ad { get; set; } = string.Empty;
 
     [Range(5, 480, ErrorMessage = "Süre 5-480 dakika arasında olmalı.")]

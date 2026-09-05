@@ -24,6 +24,7 @@ public class MuhasebeKategorisi : ITenantScoped
     public int TenantId { get; set; }
 
     [Required(ErrorMessage = "Kategori adı zorunludur.")]
+    [StringLength(100)]
     public string Ad { get; set; } = string.Empty;
 
     [Required]

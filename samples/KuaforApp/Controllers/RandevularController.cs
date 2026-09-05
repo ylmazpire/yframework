@@ -84,22 +84,10 @@ public class RandevularController : Controller
             return View(await BuildViewModelAsync(model));
         }
 
-        int musteriId;
-        if (yeniMusteriAdiGirildi)
-        {
-            var yeniMusteri = new Musteri
-            {
-                TenantId = _currentTenant.TenantId!.Value,
-                AdSoyad = model.YeniMusteriAdi!.Trim(),
-                Telefon = string.IsNullOrWhiteSpace(model.YeniMusteriTelefon)
-                    ? string.Empty
-                    : TurkishPhoneNumberFormatter.Normalize(model.YeniMusteriTelefon)
-            };
-            _context.Musteriler.Add(yeniMusteri);
-            await _context.SaveChangesAsync();
-            musteriId = yeniMusteri.Id;
-        }
-        else
+        // Mevcut müşteri seçildiyse burada doğrula. Yeni müşteri adı girildiyse kaydı henüz
+        // OLUŞTURMUYORUZ — personel/çakışma kontrolü başarısız olursa "hayalet" (randevusuz)
+        // müşteri kaydı kalmasın diye, oluşturma işlemini en sona, transaction içine erteliyoruz.
+        if (!yeniMusteriAdiGirildi)
         {
             var musteriVarMi = await _context.Musteriler.AnyAsync(m => m.Id == model.MusteriId);
             if (!musteriVarMi)
@@ -107,7 +95,6 @@ public class RandevularController : Controller
                 ModelState.AddModelError(string.Empty, "Seçilen müşteri bulunamadı.");
                 return View(await BuildViewModelAsync(model));
             }
-            musteriId = model.MusteriId!.Value;
         }
 
         var personelVarMi = await _context.Personeller.AnyAsync();
@@ -160,6 +147,26 @@ public class RandevularController : Controller
             await transaction.RollbackAsync();
             ModelState.AddModelError(string.Empty, "Bu zaman aralığında başka bir randevu var. Lütfen farklı bir saat seçin.");
             return View(await BuildViewModelAsync(model));
+        }
+
+        int musteriId;
+        if (yeniMusteriAdiGirildi)
+        {
+            var yeniMusteri = new Musteri
+            {
+                TenantId = _currentTenant.TenantId!.Value,
+                AdSoyad = model.YeniMusteriAdi!.Trim(),
+                Telefon = string.IsNullOrWhiteSpace(model.YeniMusteriTelefon)
+                    ? string.Empty
+                    : TurkishPhoneNumberFormatter.Normalize(model.YeniMusteriTelefon)
+            };
+            _context.Musteriler.Add(yeniMusteri);
+            await _context.SaveChangesAsync();
+            musteriId = yeniMusteri.Id;
+        }
+        else
+        {
+            musteriId = model.MusteriId!.Value;
         }
 
         var randevu = new Randevu
@@ -240,7 +247,12 @@ public class RandevularController : Controller
         var randevu = await _context.Randevular.FindAsync(id);
         if (randevu is null) return NotFound();
 
-        randevu.Not = string.IsNullOrWhiteSpace(not) ? null : not.Trim();
+        var temizNot = string.IsNullOrWhiteSpace(not) ? null : not.Trim();
+        if (temizNot is { Length: > 500 })
+        {
+            temizNot = temizNot[..500];
+        }
+        randevu.Not = temizNot;
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

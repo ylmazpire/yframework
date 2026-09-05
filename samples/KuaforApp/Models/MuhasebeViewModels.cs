@@ -12,6 +12,7 @@ public class MuhasebeCreateViewModel
     [Range(0.01, 1000000, ErrorMessage = "Geçerli bir tutar girin.")]
     public decimal Tutar { get; set; }
 
+    [StringLength(500)]
     public string Aciklama { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Tarih zorunludur.")]

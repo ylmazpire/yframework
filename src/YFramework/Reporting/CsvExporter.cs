@@ -26,8 +26,18 @@ public static class CsvExporter
         return result;
     }
 
+    private static readonly char[] FormulaTetikleyiciler = { '=', '+', '-', '@' };
+
     private static string Escape(string value)
     {
+        // Excel/LibreOffice CSV formül enjeksiyonu (CSV injection): bir hücre "=", "+", "-" veya
+        // "@" ile başlıyorsa, dosya açıldığında formül olarak çalıştırılabilir (örn. "=cmd|'/c calc'!A1").
+        // Başına tek tırnak koymak bu yorumlamayı engeller, veriyi bozmaz.
+        if (value.Length > 0 && FormulaTetikleyiciler.Contains(value[0]))
+        {
+            value = "'" + value;
+        }
+
         if (value.Contains(';') || value.Contains('"') || value.Contains('\n'))
         {
             return "\"" + value.Replace("\"", "\"\"") + "\"";

@@ -5,6 +5,7 @@ namespace KuaforApp.Models;
 public class MuhasebeKategorisiCreateViewModel
 {
     [Required(ErrorMessage = "Kategori adı zorunludur.")]
+    [StringLength(100)]
     public string Ad { get; set; } = string.Empty;
 
     [Required]

@@ -27,5 +27,13 @@ public class AppDbContext : YFrameworkIdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
         TenantQueryFilterApplier.Apply(modelBuilder, () => _currentTenantProvider.TenantId);
+
+        // Randevu.BaslangicZamani neredeyse her sorguda (liste, gün sonu, çakışma kontrolü,
+        // dashboard trend) tarih aralığı filtresinde kullanılıyor — TenantId ile birlikte
+        // bileşik index, bu en sık çalışan sorgu grubunu hızlandırır.
+        modelBuilder.Entity<Randevu>().HasIndex(r => new { r.TenantId, r.BaslangicZamani });
+
+        // Muhasebe raporu ay bazlı filtreleniyor (Tarih.Year/Month) — aynı mantık.
+        modelBuilder.Entity<MuhasebeKaydi>().HasIndex(k => new { k.TenantId, k.Tarih });
     }
 }

@@ -86,7 +86,9 @@ public class IsletmelerController : Controller
     public async Task<IActionResult> SifreSifirla(string kullaniciId)
     {
         var kullanici = await _userManager.FindByIdAsync(kullaniciId);
-        if (kullanici is null) return NotFound();
+        // Sadece bir işletmeye bağlı (TenantId dolu) hesapların şifresi buradan sıfırlanabilir —
+        // platform admini hesapları (TenantId null) burada hedef alınamaz.
+        if (kullanici is null || kullanici.TenantId is null) return NotFound();
 
         return View(new SifreSifirlaViewModel { KullaniciId = kullanici.Id, Email = kullanici.Email ?? string.Empty });
     }
@@ -96,7 +98,7 @@ public class IsletmelerController : Controller
     public async Task<IActionResult> SifreSifirla(SifreSifirlaViewModel model)
     {
         var kullanici = await _userManager.FindByIdAsync(model.KullaniciId);
-        if (kullanici is null) return NotFound();
+        if (kullanici is null || kullanici.TenantId is null) return NotFound();
 
         if (!ModelState.IsValid)
         {

@@ -22,6 +22,12 @@ public static class TenantQueryFilterApplier
                 .MakeGenericMethod(entityType.ClrType);
 
             method.Invoke(null, new object[] { modelBuilder, currentTenantIdAccessor });
+
+            // TenantId, otomatik filtre sayesinde HER sorguda WHERE koşuluna giriyor —
+            // bu yüzden index'lenmemesi, veri büyüdükçe her isteği yavaşlatacak en kritik
+            // eksiklik olurdu. Geliştiricinin bunu hatırlamasına gerek kalmasın diye
+            // framework burada otomatik olarak ekliyor.
+            modelBuilder.Entity(entityType.ClrType).HasIndex(nameof(ITenantScoped.TenantId));
         }
     }
 

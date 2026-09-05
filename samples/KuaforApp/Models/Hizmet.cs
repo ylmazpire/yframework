@@ -9,6 +9,7 @@ public class Hizmet : ITenantScoped
     public int TenantId { get; set; }
 
     [Required(ErrorMessage = "Hizmet adı zorunludur.")]
+    [StringLength(100)]
     public string Ad { get; set; } = string.Empty;
 
     [Range(5, 480, ErrorMessage = "Süre 5-480 dakika arasında olmalı.")]

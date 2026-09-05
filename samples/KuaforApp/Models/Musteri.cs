@@ -10,6 +10,7 @@ public class Musteri : ITenantScoped
     public int TenantId { get; set; }
 
     [Required(ErrorMessage = "Ad soyad zorunludur.")]
+    [StringLength(200)]
     public string AdSoyad { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Telefon zorunludur.")]

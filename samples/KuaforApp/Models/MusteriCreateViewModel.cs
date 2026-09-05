@@ -6,6 +6,7 @@ namespace KuaforApp.Models;
 public class MusteriCreateViewModel
 {
     [Required(ErrorMessage = "Ad soyad zorunludur.")]
+    [StringLength(200)]
     public string AdSoyad { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Telefon zorunludur.")]

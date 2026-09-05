@@ -34,6 +34,7 @@ public class Randevu : ITenantScoped
     public RandevuDurumu Durum { get; set; } = RandevuDurumu.Planlandi;
 
     /// <summary>Kuaförün kendine özel notu (örn. saç boyası formülü). Opsiyonel.</summary>
+    [StringLength(500)]
     public string? Not { get; set; }
 
     [NotMapped]

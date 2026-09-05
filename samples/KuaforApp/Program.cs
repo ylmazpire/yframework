@@ -78,44 +78,48 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole(AppRoles.IsletmeAdmini));
     }
 
-    // Demo işletme + işletme admini (geliştirme/deneme amaçlı).
-    var demoIsletme = await dbContext.Isletmeler.IgnoreQueryFilters().FirstOrDefaultAsync(i => i.Ad == "Zeynep Kuaför");
-    if (demoIsletme is null)
+    // Demo işletme + işletme admini SADECE geliştirme ortamında oluşturulur — bilinen
+    // e-posta/şifre ile bir hesap gerçek (production) bir dağıtımda asla otomatik açılmamalı.
+    if (app.Environment.IsDevelopment())
     {
-        demoIsletme = new Isletme { Ad = "Zeynep Kuaför" };
-        dbContext.Isletmeler.Add(demoIsletme);
-        await dbContext.SaveChangesAsync();
-    }
-
-    var isletmeAdminEmail = "isletme@kuafor.local";
-    if (await userManager.FindByEmailAsync(isletmeAdminEmail) is null)
-    {
-        var isletmeAdmin = new ApplicationUser
+        var demoIsletme = await dbContext.Isletmeler.IgnoreQueryFilters().FirstOrDefaultAsync(i => i.Ad == "Zeynep Kuaför");
+        if (demoIsletme is null)
         {
-            UserName = isletmeAdminEmail,
-            Email = isletmeAdminEmail,
-            EmailConfirmed = true,
-            AdSoyad = "Zeynep Yılmaz",
-            TenantId = demoIsletme.Id
-        };
-
-        var result = await userManager.CreateAsync(isletmeAdmin, "Isletme123!");
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(isletmeAdmin, AppRoles.IsletmeAdmini);
+            demoIsletme = new Isletme { Ad = "Zeynep Kuaför" };
+            dbContext.Isletmeler.Add(demoIsletme);
+            await dbContext.SaveChangesAsync();
         }
-    }
 
-    if (!await dbContext.MuhasebeKategorileri.IgnoreQueryFilters()
-            .AnyAsync(k => k.Ad == "Randevu Geliri" && k.TenantId == demoIsletme.Id))
-    {
-        dbContext.MuhasebeKategorileri.Add(new MuhasebeKategorisi
+        var isletmeAdminEmail = "isletme@kuafor.local";
+        if (await userManager.FindByEmailAsync(isletmeAdminEmail) is null)
         {
-            Ad = "Randevu Geliri",
-            Tur = IslemTuru.Gelir,
-            TenantId = demoIsletme.Id
-        });
-        await dbContext.SaveChangesAsync();
+            var isletmeAdmin = new ApplicationUser
+            {
+                UserName = isletmeAdminEmail,
+                Email = isletmeAdminEmail,
+                EmailConfirmed = true,
+                AdSoyad = "Zeynep Yılmaz",
+                TenantId = demoIsletme.Id
+            };
+
+            var result = await userManager.CreateAsync(isletmeAdmin, "Isletme123!");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(isletmeAdmin, AppRoles.IsletmeAdmini);
+            }
+        }
+
+        if (!await dbContext.MuhasebeKategorileri.IgnoreQueryFilters()
+                .AnyAsync(k => k.Ad == "Randevu Geliri" && k.TenantId == demoIsletme.Id))
+        {
+            dbContext.MuhasebeKategorileri.Add(new MuhasebeKategorisi
+            {
+                Ad = "Randevu Geliri",
+                Tur = IslemTuru.Gelir,
+                TenantId = demoIsletme.Id
+            });
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
 

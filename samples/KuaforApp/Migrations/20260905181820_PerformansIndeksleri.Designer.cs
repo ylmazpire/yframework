@@ -3,6 +3,7 @@ using System;
 using KuaforApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KuaforApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260905181820_PerformansIndeksleri")]
+    partial class PerformansIndeksleri
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -25,7 +28,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("Ad")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Fiyat")
@@ -52,7 +54,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("Ad")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("OlusturmaTarihi")
@@ -71,7 +72,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("Ad")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Periyot")
@@ -98,7 +98,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("Aciklama")
                         .IsRequired()
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("KategoriId")
@@ -137,7 +136,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("AdSoyad")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Telefon")
@@ -162,7 +160,6 @@ namespace KuaforApp.Migrations
 
                     b.Property<string>("AdSoyad")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TenantId")
@@ -194,7 +191,6 @@ namespace KuaforApp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Not")
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PersonelId")
