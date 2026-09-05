@@ -24,6 +24,8 @@ public class RandevuCreateViewModel
     /// <summary>İşletmede personel tanımlıysa doldurulur.</summary>
     public int? PersonelId { get; set; }
 
+    public string? Not { get; set; }
+
     public List<SelectListItem> Musteriler { get; set; } = new();
     public List<SelectListItem> Hizmetler { get; set; } = new();
     public List<SelectListItem> Personeller { get; set; } = new();

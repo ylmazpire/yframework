@@ -169,7 +169,8 @@ public class RandevularController : Controller
             HizmetId = model.HizmetId,
             PersonelId = personelVarMi ? model.PersonelId : null,
             BaslangicZamani = yeniBaslangic,
-            Durum = RandevuDurumu.Planlandi
+            Durum = RandevuDurumu.Planlandi,
+            Not = string.IsNullOrWhiteSpace(model.Not) ? null : model.Not.Trim()
         };
 
         _context.Randevular.Add(randevu);
@@ -228,6 +229,18 @@ public class RandevularController : Controller
             }
         }
 
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NotGuncelle(int id, string? not)
+    {
+        var randevu = await _context.Randevular.FindAsync(id);
+        if (randevu is null) return NotFound();
+
+        randevu.Not = string.IsNullOrWhiteSpace(not) ? null : not.Trim();
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

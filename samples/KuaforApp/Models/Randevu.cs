@@ -33,6 +33,9 @@ public class Randevu : ITenantScoped
 
     public RandevuDurumu Durum { get; set; } = RandevuDurumu.Planlandi;
 
+    /// <summary>Kuaförün kendine özel notu (örn. saç boyası formülü). Opsiyonel.</summary>
+    public string? Not { get; set; }
+
     [NotMapped]
     public DateTime BitisZamani => BaslangicZamani.AddMinutes(Hizmet?.SureDakika ?? 0);
 }

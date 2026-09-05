@@ -1,0 +1,71 @@
+@using YFramework.Formatting
+@model KuaforApp.Models.MusteriDetayViewModel
+@{
+    ViewData["Title"] = Model.Musteri.AdSoyad;
+
+    string DurumBadgeClass(KuaforApp.Models.RandevuDurumu durum) => durum switch
+    {
+        KuaforApp.Models.RandevuDurumu.Planlandi => "bg-primary",
+        KuaforApp.Models.RandevuDurumu.Tamamlandi => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    string DurumMetni(KuaforApp.Models.RandevuDurumu durum) => durum switch
+    {
+        KuaforApp.Models.RandevuDurumu.Planlandi => "Planlandı",
+        KuaforApp.Models.RandevuDurumu.Tamamlandi => "Tamamlandı",
+        _ => "İptal Edildi"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">@Model.Musteri.AdSoyad</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Müşteriler</a>
+</div>
+
+<p class="text-muted mb-4">@Model.Musteri.Telefon</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-6">
+        <div class="stat-card">
+            <div class="stat-value">@TurkishCurrencyFormatter.Format(Model.ToplamHarcama)</div>
+            <div class="stat-label">Toplam Harcama</div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="stat-card">
+            <div class="stat-value">@Model.TamamlananRandevuSayisi</div>
+            <div class="stat-label">Tamamlanan Randevu</div>
+        </div>
+    </div>
+</div>
+
+<div class="surface-card">
+    <h6 class="mb-3">Randevu Geçmişi</h6>
+    @if (!Model.Randevular.Any())
+    {
+        <p class="text-muted mb-0">Bu müşterinin henüz randevusu yok.</p>
+    }
+    else
+    {
+        @foreach (var randevu in Model.Randevular)
+        {
+            <div class="list-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="list-card-title">@randevu.Hizmet?.Ad</div>
+                        <div class="list-card-subtitle">
+                            @randevu.BaslangicZamani.ToString("dd.MM.yyyy HH:mm")
+                            @(randevu.Personel is not null ? " · " + randevu.Personel.AdSoyad : "")
+                        </div>
+                    </div>
+                    <span class="badge @DurumBadgeClass(randevu.Durum)">@DurumMetni(randevu.Durum)</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(randevu.Not))
+                {
+                    <div class="mt-2 small text-muted fst-italic">📝 @randevu.Not</div>
+                }
+            </div>
+        }
+    }
+</div>

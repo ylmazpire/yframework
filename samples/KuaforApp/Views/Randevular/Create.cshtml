@@ -51,6 +51,10 @@
                 </select>
             </div>
         }
+        <div class="mb-3">
+            <label asp-for="Not" class="form-label">Not (opsiyonel)</label>
+            <textarea asp-for="Not" class="form-control" rows="2" placeholder="Örn. Saç boyası formülü: 6.3 + 20 vol"></textarea>
+        </div>
         <button type="submit" class="btn btn-primary">Kaydet</button>
         <a asp-action="Index" class="btn btn-secondary">İptal</a>
     </form>

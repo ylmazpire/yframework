@@ -55,6 +55,29 @@ public class MusterilerController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public async Task<IActionResult> Detay(int id)
+    {
+        var musteri = await _context.Musteriler.FindAsync(id);
+        if (musteri is null) return NotFound();
+
+        var randevular = await _context.Randevular
+            .Include(r => r.Hizmet)
+            .Include(r => r.Personel)
+            .Where(r => r.MusteriId == id)
+            .OrderByDescending(r => r.BaslangicZamani)
+            .ToListAsync();
+
+        var tamamlananlar = randevular.Where(r => r.Durum == RandevuDurumu.Tamamlandi).ToList();
+
+        return View(new MusteriDetayViewModel
+        {
+            Musteri = musteri,
+            Randevular = randevular,
+            TamamlananRandevuSayisi = tamamlananlar.Count,
+            ToplamHarcama = tamamlananlar.Sum(r => r.Hizmet?.Fiyat ?? 0)
+        });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
