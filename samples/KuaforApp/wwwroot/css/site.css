@@ -63,6 +63,11 @@ a {
   min-height: 100vh;
 }
 
+.app-main {
+  flex: 1;
+  min-width: 0;
+}
+
 /* ---- Sidebar (desktop) ---- */
 .app-sidebar {
   display: none;
@@ -80,11 +85,6 @@ a {
     position: sticky;
     top: 0;
     height: 100vh;
-  }
-
-  .app-main {
-    flex: 1;
-    min-width: 0;
   }
 }
 

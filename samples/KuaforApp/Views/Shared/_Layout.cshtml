@@ -29,7 +29,6 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/KuaforApp.styles.css" asp-append-version="true" />
 </head>
 <body>
     <div class="app-shell">
@@ -111,7 +110,12 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js');
+                navigator.serviceWorker.register('/sw.js').catch(function (err) {
+                    // Bazı tarayıcı/önizleme modlarında (örn. Safari'nin Responsive Design Mode'u)
+                    // service worker desteklenmez — bu durumda sessizce yok sayıyoruz,
+                    // sayfanın geri kalanı zaten service worker'a bağımlı değil.
+                    console.warn('Service worker kaydı yapılamadı:', err);
+                });
             });
         }
 

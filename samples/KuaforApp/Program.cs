@@ -1,11 +1,10 @@
-using System.Globalization;
 using KuaforApp;
 using KuaforApp.Data;
 using KuaforApp.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using YFramework.Auth;
+using YFramework.Hosting;
 using YFramework.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,29 +46,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Form/URL'den gelen sayıları her zaman değişmez (InvariantCulture) formatta yorumla —
-// aksi halde sunucunun işletim sistemi Türkçe locale kullanırsa, HTML5 "number" input'larının
-// her zaman nokta ile gönderdiği ondalık değerler (örn. "45.50") yanlış parse edilir (4550 gibi).
-// Ekranda para gösterimi için ayrıca YFramework.Formatting.TurkishCurrencyFormatter kullanılıyor.
-app.UseRequestLocalization(new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture(CultureInfo.InvariantCulture),
-    SupportedCultures = new List<CultureInfo> { CultureInfo.InvariantCulture },
-    SupportedUICultures = new List<CultureInfo> { CultureInfo.InvariantCulture }
-});
-
 app.UseHttpsRedirection();
+
+// Statik dosya servisi + değişmez (invariant) kültür ayarı — bilinen tuzaklar için
+// bkz. YFramework.Hosting.YFrameworkAppExtensions.
+app.UseYFrameworkDefaults();
+
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 using (var scope = app.Services.CreateScope())
 {

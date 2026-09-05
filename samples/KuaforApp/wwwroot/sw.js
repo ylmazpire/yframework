@@ -3,7 +3,7 @@
 // (multi-tenant) bir uygulama, bir kullanıcının oturum/işletme verisinin önbellekten
 // başka bir kullanıcıya sızmasını önlemek için sayfalar her zaman ağdan taze gelmeli.
 
-const CACHE_NAME = "kuaforapp-static-v1";
+const CACHE_NAME = "kuaforapp-static-v2";
 const STATIC_ASSETS = [
   "/css/site.css",
   "/js/site.js",
