@@ -8,4 +8,10 @@ namespace YFramework.Auth;
 public class ApplicationUser : IdentityUser
 {
     public string AdSoyad { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Kullanıcının bağlı olduğu kiracı (işletme). null ise platform admini demektir —
+    /// hiçbir işletmeye bağlı değildir ve tüm kiracıların verilerini görebilir.
+    /// </summary>
+    public int? TenantId { get; set; }
 }

@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using YFramework.MultiTenancy;
 
 namespace KuaforApp.Models;
 
-public class Hizmet
+public class Hizmet : ITenantScoped
 {
     public int Id { get; set; }
+    public int TenantId { get; set; }
 
     [Required(ErrorMessage = "Hizmet adı zorunludur.")]
     public string Ad { get; set; } = string.Empty;

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using YFramework.MultiTenancy;
 
 namespace KuaforApp.Models;
 
@@ -10,9 +11,10 @@ public enum RandevuDurumu
     IptalEdildi
 }
 
-public class Randevu
+public class Randevu : ITenantScoped
 {
     public int Id { get; set; }
+    public int TenantId { get; set; }
 
     [Required]
     public int MusteriId { get; set; }

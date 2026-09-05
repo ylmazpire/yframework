@@ -4,19 +4,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using YFramework.Auth;
+using YFramework.MultiTenancy;
 using YFramework.Reporting;
 
 namespace KuaforApp.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = AppRoles.IsletmeAdmini)]
 public class MuhasebeController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentTenantProvider _currentTenant;
 
-    public MuhasebeController(AppDbContext context)
+    public MuhasebeController(AppDbContext context, ICurrentTenantProvider currentTenant)
     {
         _context = context;
+        _currentTenant = currentTenant;
     }
 
     public async Task<IActionResult> Index(int? yil, int? ay)
@@ -57,6 +59,7 @@ public class MuhasebeController : Controller
 
         var kayit = new MuhasebeKaydi
         {
+            TenantId = _currentTenant.TenantId!.Value,
             KategoriId = model.KategoriId,
             Tutar = model.Tutar,
             Aciklama = model.Aciklama,

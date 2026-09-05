@@ -1,7 +1,7 @@
 using System.Diagnostics;
+using KuaforApp;
 using KuaforApp.Data;
 using KuaforApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +18,15 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        if (User.Identity?.IsAuthenticated != true || !User.IsInRole("Admin"))
+        if (User.Identity?.IsAuthenticated != true)
         {
             return View("Welcome");
+        }
+
+        if (User.IsInRole(AppRoles.IsletmeAdmini) is false)
+        {
+            // Platform admini: işletme verisi yerine işletme yönetim ekranına yönlendirilir.
+            return RedirectToAction("Index", "Isletmeler");
         }
 
         var bugun = DateTime.Today;

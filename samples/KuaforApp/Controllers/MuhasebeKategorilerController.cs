@@ -3,18 +3,20 @@ using KuaforApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using YFramework.Auth;
+using YFramework.MultiTenancy;
 
 namespace KuaforApp.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = AppRoles.IsletmeAdmini)]
 public class MuhasebeKategorilerController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentTenantProvider _currentTenant;
 
-    public MuhasebeKategorilerController(AppDbContext context)
+    public MuhasebeKategorilerController(AppDbContext context, ICurrentTenantProvider currentTenant)
     {
         _context = context;
+        _currentTenant = currentTenant;
     }
 
     public async Task<IActionResult> Index()
@@ -34,6 +36,7 @@ public class MuhasebeKategorilerController : Controller
 
         var kategori = new MuhasebeKategorisi
         {
+            TenantId = _currentTenant.TenantId!.Value,
             Ad = model.Ad,
             Tur = model.Tur
         };

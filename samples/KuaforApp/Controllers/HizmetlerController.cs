@@ -3,18 +3,20 @@ using KuaforApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using YFramework.Auth;
+using YFramework.MultiTenancy;
 
 namespace KuaforApp.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = AppRoles.IsletmeAdmini)]
 public class HizmetlerController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentTenantProvider _currentTenant;
 
-    public HizmetlerController(AppDbContext context)
+    public HizmetlerController(AppDbContext context, ICurrentTenantProvider currentTenant)
     {
         _context = context;
+        _currentTenant = currentTenant;
     }
 
     public async Task<IActionResult> Index()
@@ -34,6 +36,7 @@ public class HizmetlerController : Controller
 
         var hizmet = new Hizmet
         {
+            TenantId = _currentTenant.TenantId!.Value,
             Ad = model.Ad,
             SureDakika = model.SureDakika,
             Fiyat = model.Fiyat

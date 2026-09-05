@@ -1,13 +1,18 @@
+using KuaforApp;
 using KuaforApp.Data;
 using KuaforApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using YFramework.Auth;
+using YFramework.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentTenantProvider, HttpContextTenantProvider>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -20,6 +25,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+// Oturum açan kullanıcının kiracı (işletme) bilgisini claim olarak ekler.
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, TenantClaimsPrincipalFactory<ApplicationUser>>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -54,15 +62,56 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Platform admini: hiçbir işletmeye bağlı değil (TenantId = null), tüm işletmeleri yönetir.
     await IdentitySeeder.SeedAsync(
         roleManager,
         userManager,
-        new AdminSeedOptions("admin@kuafor.local", "Admin123!", "Yönetici"));
+        new AdminSeedOptions("admin@kuafor.local", "Admin123!", "Platform Yöneticisi"));
 
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (!await dbContext.MuhasebeKategorileri.AnyAsync(k => k.Ad == "Randevu Geliri"))
+    if (!await roleManager.RoleExistsAsync(AppRoles.IsletmeAdmini))
     {
-        dbContext.MuhasebeKategorileri.Add(new MuhasebeKategorisi { Ad = "Randevu Geliri", Tur = IslemTuru.Gelir });
+        await roleManager.CreateAsync(new IdentityRole(AppRoles.IsletmeAdmini));
+    }
+
+    // Demo işletme + işletme admini (geliştirme/deneme amaçlı).
+    var demoIsletme = await dbContext.Isletmeler.IgnoreQueryFilters().FirstOrDefaultAsync(i => i.Ad == "Zeynep Kuaför");
+    if (demoIsletme is null)
+    {
+        demoIsletme = new Isletme { Ad = "Zeynep Kuaför" };
+        dbContext.Isletmeler.Add(demoIsletme);
+        await dbContext.SaveChangesAsync();
+    }
+
+    var isletmeAdminEmail = "isletme@kuafor.local";
+    if (await userManager.FindByEmailAsync(isletmeAdminEmail) is null)
+    {
+        var isletmeAdmin = new ApplicationUser
+        {
+            UserName = isletmeAdminEmail,
+            Email = isletmeAdminEmail,
+            EmailConfirmed = true,
+            AdSoyad = "Zeynep Yılmaz",
+            TenantId = demoIsletme.Id
+        };
+
+        var result = await userManager.CreateAsync(isletmeAdmin, "Isletme123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(isletmeAdmin, AppRoles.IsletmeAdmini);
+        }
+    }
+
+    if (!await dbContext.MuhasebeKategorileri.IgnoreQueryFilters()
+            .AnyAsync(k => k.Ad == "Randevu Geliri" && k.TenantId == demoIsletme.Id))
+    {
+        dbContext.MuhasebeKategorileri.Add(new MuhasebeKategorisi
+        {
+            Ad = "Randevu Geliri",
+            Tur = IslemTuru.Gelir,
+            TenantId = demoIsletme.Id
+        });
         await dbContext.SaveChangesAsync();
     }
 }

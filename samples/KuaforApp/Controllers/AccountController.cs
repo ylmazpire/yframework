@@ -1,5 +1,4 @@
 using KuaforApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using YFramework.Auth;
@@ -46,39 +45,6 @@ public class AccountController : Controller
         }
 
         ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
-        return View(model);
-    }
-
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View(new RegisterViewModel());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid) return View(model);
-
-        var user = new ApplicationUser
-        {
-            UserName = model.Email,
-            Email = model.Email,
-            AdSoyad = model.AdSoyad
-        };
-
-        var result = await _userManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
-        {
-            await _userManager.AddToRoleAsync(user, Roles.User);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
-        }
-
-        foreach (var error in result.Errors)
-            ModelState.AddModelError(string.Empty, error.Description);
-
         return View(model);
     }
 

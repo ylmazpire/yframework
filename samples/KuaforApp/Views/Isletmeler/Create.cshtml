@@ -1,0 +1,40 @@
+@model KuaforApp.Models.IsletmeCreateViewModel
+@{
+    ViewData["Title"] = "Yeni İşletme";
+}
+
+<h2 class="mb-4">Yeni İşletme Oluştur</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="IsletmeAdi" class="form-label"></label>
+            <input asp-for="IsletmeAdi" class="form-control" />
+            <span asp-validation-for="IsletmeAdi" class="text-danger"></span>
+        </div>
+        <hr />
+        <p class="text-muted small">Bu işletmenin yönetim paneline giriş yapacak yetkili hesabı:</p>
+        <div class="mb-3">
+            <label asp-for="YetkiliAdSoyad" class="form-label"></label>
+            <input asp-for="YetkiliAdSoyad" class="form-control" />
+            <span asp-validation-for="YetkiliAdSoyad" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="YetkiliEmail" class="form-label"></label>
+            <input asp-for="YetkiliEmail" class="form-control" />
+            <span asp-validation-for="YetkiliEmail" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="YetkiliSifre" class="form-label"></label>
+            <input asp-for="YetkiliSifre" class="form-control" />
+            <span asp-validation-for="YetkiliSifre" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Oluştur</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

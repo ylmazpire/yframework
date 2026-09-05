@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using YFramework.MultiTenancy;
 using YFramework.Reporting;
 
 namespace KuaforApp.Models;
 
-public class MuhasebeKaydi : IFinancialTransaction
+public class MuhasebeKaydi : IFinancialTransaction, ITenantScoped
 {
     public int Id { get; set; }
+    public int TenantId { get; set; }
 
     [Required(ErrorMessage = "Kategori seçimi zorunludur.")]
     public int KategoriId { get; set; }

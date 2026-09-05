@@ -1,5 +1,7 @@
+@using KuaforApp
 @{
-    bool isAdmin = User.IsInRole("Admin");
+    bool isPlatformAdmin = User.IsInRole("Admin");
+    bool isIsletmeAdmini = User.IsInRole(AppRoles.IsletmeAdmini);
     string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 }
 <!DOCTYPE html>
@@ -20,13 +22,17 @@
             <aside class="app-sidebar">
                 <a class="brand" asp-controller="Home" asp-action="Index">✂ KuaforApp</a>
                 <nav class="nav flex-column">
-                    <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Ana Sayfa</a>
-                    @if (isAdmin)
+                    @if (isIsletmeAdmini)
                     {
+                        <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Ana Sayfa</a>
                         <a class="nav-link @(currentController == "Randevular" ? "active" : "")" asp-controller="Randevular" asp-action="Index">📅 Randevular</a>
                         <a class="nav-link @(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">👥 Müşteriler</a>
                         <a class="nav-link @(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">💈 Hizmetler</a>
                         <a class="nav-link @(currentController == "Muhasebe" || currentController == "MuhasebeKategoriler" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">💰 Muhasebe</a>
+                    }
+                    else if (isPlatformAdmin)
+                    {
+                        <a class="nav-link @(currentController == "Isletmeler" ? "active" : "")" asp-controller="Isletmeler" asp-action="Index">🏢 İşletmeler</a>
                     }
                 </nav>
                 <div class="mt-auto pt-3">
@@ -42,10 +48,7 @@
                 <a class="brand-mobile" asp-controller="Home" asp-action="Index">✂ KuaforApp</a>
                 @if (User.Identity?.IsAuthenticated != true)
                 {
-                    <div>
-                        <a class="btn btn-sm btn-outline-primary me-2" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-                        <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
-                    </div>
+                    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Giriş Yap</a>
                 }
                 else
                 {
@@ -59,7 +62,7 @@
         </div>
     </div>
 
-    @if (User.Identity?.IsAuthenticated == true && isAdmin)
+    @if (isIsletmeAdmini)
     {
         <nav class="app-bottom-nav">
             <a class="@(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">

@@ -5,21 +5,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using YFramework.Auth;
+using YFramework.MultiTenancy;
 using YFramework.Scheduling;
 
 namespace KuaforApp.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = AppRoles.IsletmeAdmini)]
 public class RandevularController : Controller
 {
     private readonly AppDbContext _context;
     private readonly ILogger<RandevularController> _logger;
+    private readonly ICurrentTenantProvider _currentTenant;
 
-    public RandevularController(AppDbContext context, ILogger<RandevularController> logger)
+    public RandevularController(AppDbContext context, ILogger<RandevularController> logger, ICurrentTenantProvider currentTenant)
     {
         _context = context;
         _logger = logger;
+        _currentTenant = currentTenant;
     }
 
     public async Task<IActionResult> Index()
@@ -88,6 +90,7 @@ public class RandevularController : Controller
 
         var randevu = new Randevu
         {
+            TenantId = _currentTenant.TenantId!.Value,
             MusteriId = model.MusteriId,
             HizmetId = model.HizmetId,
             BaslangicZamani = yeniBaslangic,
@@ -134,6 +137,7 @@ public class RandevularController : Controller
             {
                 _context.MuhasebeKayitlari.Add(new MuhasebeKaydi
                 {
+                    TenantId = _currentTenant.TenantId!.Value,
                     KategoriId = randevuGeliriKategorisi.Id,
                     Tutar = randevu.Hizmet.Fiyat,
                     Aciklama = $"{randevu.Musteri?.AdSoyad} - {randevu.Hizmet.Ad}",

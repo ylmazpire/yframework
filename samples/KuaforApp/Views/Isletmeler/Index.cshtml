@@ -1,0 +1,44 @@
+@model List<KuaforApp.Models.Isletme>
+@{
+    ViewData["Title"] = "İşletmeler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">İşletmeler</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni İşletme</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz işletme eklenmemiş.</p>
+}
+
+<div class="d-lg-none">
+    @foreach (var isletme in Model)
+    {
+        <div class="list-card">
+            <div class="list-card-title">@isletme.Ad</div>
+            <div class="list-card-subtitle">Kayıt: @isletme.OlusturmaTarihi.ToString("dd.MM.yyyy")</div>
+        </div>
+    }
+</div>
+
+<div class="d-none d-lg-block surface-card">
+    <table class="table table-borderless mb-0">
+        <thead>
+            <tr class="text-muted small text-uppercase">
+                <th>İşletme Adı</th>
+                <th>Kayıt Tarihi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var isletme in Model)
+            {
+                <tr>
+                    <td>@isletme.Ad</td>
+                    <td>@isletme.OlusturmaTarihi.ToString("dd.MM.yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
