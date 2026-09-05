@@ -10,6 +10,24 @@
   --accent-dark: #d1042f;
   --sidebar-width: 240px;
   --bottom-nav-height: 76px;
+  --topbar-bg: rgba(0, 0, 0, 0.72);
+  --bottomnav-bg: rgba(20, 20, 22, 0.85);
+  --hero-gradient: linear-gradient(155deg, #1c1c1e 0%, #0a0a0a 100%);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-elevated: #f0f0f3;
+  --text: #1c1c1e;
+  --text-muted: #6e6e73;
+  --border: #e2e2e6;
+  --accent: #ff073a;
+  --accent-dark: #d1042f;
+  --topbar-bg: rgba(255, 255, 255, 0.78);
+  --bottomnav-bg: rgba(255, 255, 255, 0.88);
+  --hero-gradient: linear-gradient(155deg, #ffffff 0%, #f0f0f3 100%);
 }
 
 * {
@@ -101,7 +119,7 @@ a {
 
 /* ---- Top bar ---- */
 .app-topbar {
-  background: rgba(0, 0, 0, 0.72);
+  background: var(--topbar-bg);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
@@ -144,7 +162,7 @@ a {
   right: 0;
   height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: rgba(20, 20, 22, 0.85);
+  background: var(--bottomnav-bg);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-top: 1px solid var(--border);
@@ -218,7 +236,7 @@ a {
 
 /* ---- Hero card (dashboard net kazanç) ---- */
 .hero-card {
-  background: linear-gradient(155deg, #1c1c1e 0%, #0a0a0a 100%);
+  background: var(--hero-gradient);
   border: 1px solid var(--border);
   border-radius: 1.5rem;
   padding: 1.75rem;

@@ -13,6 +13,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="KuaforApp" />
+    <script>
+        // Sayfa çizilmeden önce tema tercihini uygula ki geçişte yanıp sönme (flash) olmasın.
+        (function () {
+            var kayitliTema = localStorage.getItem('tema');
+            if (kayitliTema === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <link rel="manifest" href="~/manifest.json" />
     <link rel="apple-touch-icon" href="~/icons/icon-192.png" />
     <link rel="icon" href="~/icons/icon-192.png" />
@@ -45,6 +54,7 @@
                     }
                 </nav>
                 <div class="mt-auto pt-3">
+                    <button type="button" id="temaButonuMasaustu" class="btn btn-link nav-link w-100 text-start px-2">🌙 Koyu / Açık Tema</button>
                     <div class="text-muted small mb-2 px-2">@User.Identity!.Name</div>
                     <form asp-controller="Account" asp-action="Logout" method="post">
                         <button type="submit" class="btn btn-link nav-link w-100 text-start px-2">🚪 Çıkış Yap</button>
@@ -61,7 +71,10 @@
                 }
                 else
                 {
-                    <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                        <button type="button" id="temaButonuMobil" class="btn btn-sm btn-outline-secondary d-lg-none">🌙</button>
+                    </div>
                 }
             </header>
 
@@ -101,6 +114,23 @@
                 navigator.serviceWorker.register('/sw.js');
             });
         }
+
+        (function () {
+            function temayiDegistir() {
+                var suanKoyuMu = document.documentElement.getAttribute('data-theme') !== 'light';
+                if (suanKoyuMu) {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('tema', 'light');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('tema', 'dark');
+                }
+            }
+            var b1 = document.getElementById('temaButonuMasaustu');
+            var b2 = document.getElementById('temaButonuMobil');
+            if (b1) b1.addEventListener('click', temayiDegistir);
+            if (b2) b2.addEventListener('click', temayiDegistir);
+        })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
