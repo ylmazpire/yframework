@@ -62,8 +62,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css"
+          integrity="sha512-yEHC7FflLeDwrG+mrmbpEa2I9iQZcZwRYLsu4ROIMlP15bAacqAhcF5WlMaeWfYMZc93P8GhVyRNi15yotj6Rg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"
+            integrity="sha512-l97jKm0MQeIX6OolYay6IlA3Y2KpGh+4/hm8pLSKmQkFwLFkhk7hhWfzGEyqmfetG30G4i4Bo7RHNwMWgEpSLA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         /* Select2'yi koyu temaya uydur */
         .select2-container--default .select2-selection--single {
