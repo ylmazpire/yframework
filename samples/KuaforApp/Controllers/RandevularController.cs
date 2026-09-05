@@ -95,10 +95,33 @@ public class RandevularController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Tamamlandi(int id)
     {
-        var randevu = await _context.Randevular.FindAsync(id);
+        var randevu = await _context.Randevular
+            .Include(r => r.Musteri)
+            .Include(r => r.Hizmet)
+            .FirstOrDefaultAsync(r => r.Id == id);
         if (randevu is null) return NotFound();
 
         randevu.Durum = RandevuDurumu.Tamamlandi;
+
+        var gelirZatenVarMi = await _context.MuhasebeKayitlari.AnyAsync(k => k.RandevuId == randevu.Id);
+        if (!gelirZatenVarMi && randevu.Hizmet is not null)
+        {
+            var randevuGeliriKategorisi = await _context.MuhasebeKategorileri
+                .FirstOrDefaultAsync(k => k.Ad == "Randevu Geliri" && k.Tur == IslemTuru.Gelir);
+
+            if (randevuGeliriKategorisi is not null)
+            {
+                _context.MuhasebeKayitlari.Add(new MuhasebeKaydi
+                {
+                    KategoriId = randevuGeliriKategorisi.Id,
+                    Tutar = randevu.Hizmet.Fiyat,
+                    Aciklama = $"{randevu.Musteri?.AdSoyad} - {randevu.Hizmet.Ad}",
+                    Tarih = randevu.BaslangicZamani.Date,
+                    RandevuId = randevu.Id
+                });
+            }
+        }
+
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

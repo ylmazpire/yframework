@@ -1,0 +1,39 @@
+@model KuaforApp.Models.MuhasebeCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Muhasebe Kaydı";
+}
+
+<h2 class="mb-4">Yeni Gelir / Gider Kaydı</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="KategoriId" class="form-label">Kategori</label>
+            <select asp-for="KategoriId" asp-items="Model.Kategoriler" class="form-select">
+                <option value="">-- Kategori seçin --</option>
+            </select>
+            <span asp-validation-for="KategoriId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Tutar" class="form-label"></label>
+            <input asp-for="Tutar" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Tutar" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Aciklama" class="form-label"></label>
+            <input asp-for="Aciklama" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Tarih" class="form-label"></label>
+            <input asp-for="Tarih" class="form-control" type="date" />
+            <span asp-validation-for="Tarih" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

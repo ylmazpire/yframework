@@ -1,4 +1,5 @@
 using KuaforApp.Data;
+using KuaforApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using YFramework.Auth;
@@ -57,6 +58,13 @@ using (var scope = app.Services.CreateScope())
         roleManager,
         userManager,
         new AdminSeedOptions("admin@kuafor.local", "Admin123!", "Yönetici"));
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (!await dbContext.MuhasebeKategorileri.AnyAsync(k => k.Ad == "Randevu Geliri"))
+    {
+        dbContext.MuhasebeKategorileri.Add(new MuhasebeKategorisi { Ad = "Randevu Geliri", Tur = IslemTuru.Gelir });
+        await dbContext.SaveChangesAsync();
+    }
 }
 
 app.Run();

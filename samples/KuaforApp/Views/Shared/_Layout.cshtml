@@ -26,6 +26,7 @@
                         <a class="nav-link @(currentController == "Randevular" ? "active" : "")" asp-controller="Randevular" asp-action="Index">📅 Randevular</a>
                         <a class="nav-link @(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">👥 Müşteriler</a>
                         <a class="nav-link @(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">💈 Hizmetler</a>
+                        <a class="nav-link @(currentController == "Muhasebe" || currentController == "MuhasebeKategoriler" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">💰 Muhasebe</a>
                     }
                 </nav>
                 <div class="mt-auto pt-3">
@@ -72,6 +73,9 @@
             </a>
             <a class="@(currentController == "Hizmetler" ? "active" : "")" asp-controller="Hizmetler" asp-action="Index">
                 <span class="icon">💈</span>Hizmetler
+            </a>
+            <a class="@(currentController == "Muhasebe" || currentController == "MuhasebeKategoriler" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">
+                <span class="icon">💰</span>Muhasebe
             </a>
         </nav>
     }
