@@ -71,4 +71,51 @@ public class IsletmelerController : Controller
         await _userManager.AddToRoleAsync(yetkiliKullanici, AppRoles.IsletmeAdmini);
         return RedirectToAction(nameof(Index));
     }
+
+    public async Task<IActionResult> Detay(int id)
+    {
+        var isletme = await _context.Isletmeler.FindAsync(id);
+        if (isletme is null) return NotFound();
+
+        var kullanicilar = await _context.Users.Where(u => u.TenantId == id).ToListAsync();
+
+        return View(new IsletmeDetayViewModel { Isletme = isletme, Kullanicilar = kullanicilar });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SifreSifirla(string kullaniciId)
+    {
+        var kullanici = await _userManager.FindByIdAsync(kullaniciId);
+        if (kullanici is null) return NotFound();
+
+        return View(new SifreSifirlaViewModel { KullaniciId = kullanici.Id, Email = kullanici.Email ?? string.Empty });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SifreSifirla(SifreSifirlaViewModel model)
+    {
+        var kullanici = await _userManager.FindByIdAsync(model.KullaniciId);
+        if (kullanici is null) return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            model.Email = kullanici.Email ?? string.Empty;
+            return View(model);
+        }
+
+        await _userManager.RemovePasswordAsync(kullanici);
+        var result = await _userManager.AddPasswordAsync(kullanici, model.YeniSifre);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+            model.Email = kullanici.Email ?? string.Empty;
+            return View(model);
+        }
+
+        TempData["Basari"] = $"{kullanici.Email} için şifre güncellendi.";
+        return RedirectToAction(nameof(Detay), new { id = kullanici.TenantId });
+    }
 }

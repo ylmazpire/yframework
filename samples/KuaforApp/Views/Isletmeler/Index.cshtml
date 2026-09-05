@@ -16,19 +16,20 @@
 <div class="d-lg-none">
     @foreach (var isletme in Model)
     {
-        <div class="list-card">
+        <a class="list-card d-block" asp-action="Detay" asp-route-id="@isletme.Id" style="color: inherit;">
             <div class="list-card-title">@isletme.Ad</div>
             <div class="list-card-subtitle">Kayıt: @isletme.OlusturmaTarihi.ToString("dd.MM.yyyy")</div>
-        </div>
+        </a>
     }
 </div>
 
 <div class="d-none d-lg-block surface-card">
-    <table class="table table-borderless mb-0">
+    <table class="table table-borderless mb-0 align-middle">
         <thead>
             <tr class="text-muted small text-uppercase">
                 <th>İşletme Adı</th>
                 <th>Kayıt Tarihi</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -37,6 +38,9 @@
                 <tr>
                     <td>@isletme.Ad</td>
                     <td>@isletme.OlusturmaTarihi.ToString("dd.MM.yyyy")</td>
+                    <td class="text-end">
+                        <a asp-action="Detay" asp-route-id="@isletme.Id" class="btn btn-sm btn-outline-secondary">Detay</a>
+                    </td>
                 </tr>
             }
         </tbody>
