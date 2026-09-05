@@ -262,8 +262,8 @@ a {
 /* ---- Quick nav grid ---- */
 .quick-nav {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  gap: 0.4rem;
 }
 
 .quick-nav a {
