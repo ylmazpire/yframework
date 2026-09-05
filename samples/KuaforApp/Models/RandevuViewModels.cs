@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using YFramework.Validation;
 
 namespace KuaforApp.Models;
 
@@ -11,7 +12,7 @@ public class RandevuCreateViewModel
     /// <summary>Yeni bir müşteri girilirse doldurulur (MusteriId ile birlikte kullanılmaz).</summary>
     public string? YeniMusteriAdi { get; set; }
 
-    [Phone(ErrorMessage = "Geçerli bir telefon numarası girin.")]
+    [TurkishPhoneNumber]
     public string? YeniMusteriTelefon { get; set; }
 
     [Required(ErrorMessage = "Hizmet seçimi zorunludur.")]

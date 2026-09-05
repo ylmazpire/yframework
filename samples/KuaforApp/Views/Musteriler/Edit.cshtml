@@ -16,7 +16,7 @@
         </div>
         <div class="mb-3">
             <label asp-for="Telefon" class="form-label"></label>
-            <input asp-for="Telefon" class="form-control" />
+            <input asp-for="Telefon" class="form-control" data-tr-phone inputmode="numeric" placeholder="0 533 598 32 12" />
             <span asp-validation-for="Telefon" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Kaydet</button>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using YFramework.MultiTenancy;
+using YFramework.Validation;
 
 namespace KuaforApp.Models;
 
@@ -12,6 +13,6 @@ public class Musteri : ITenantScoped
     public string AdSoyad { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Telefon zorunludur.")]
-    [Phone(ErrorMessage = "Geçerli bir telefon numarası girin.")]
+    [TurkishPhoneNumber]
     public string Telefon { get; set; } = string.Empty;
 }

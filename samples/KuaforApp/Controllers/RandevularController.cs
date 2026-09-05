@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using YFramework.MultiTenancy;
 using YFramework.Scheduling;
+using YFramework.Validation;
 
 namespace KuaforApp.Controllers;
 
@@ -69,7 +70,9 @@ public class RandevularController : Controller
             {
                 TenantId = _currentTenant.TenantId!.Value,
                 AdSoyad = model.YeniMusteriAdi!.Trim(),
-                Telefon = model.YeniMusteriTelefon?.Trim() ?? string.Empty
+                Telefon = string.IsNullOrWhiteSpace(model.YeniMusteriTelefon)
+                    ? string.Empty
+                    : TurkishPhoneNumberFormatter.Normalize(model.YeniMusteriTelefon)
             };
             _context.Musteriler.Add(yeniMusteri);
             await _context.SaveChangesAsync();

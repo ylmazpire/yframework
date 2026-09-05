@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using YFramework.Validation;
 
 namespace KuaforApp.Models;
 
@@ -10,6 +11,6 @@ public class MusteriEditViewModel
     public string AdSoyad { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Telefon zorunludur.")]
-    [Phone(ErrorMessage = "Geçerli bir telefon numarası girin.")]
+    [TurkishPhoneNumber]
     public string Telefon { get; set; } = string.Empty;
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using YFramework.MultiTenancy;
+using YFramework.Validation;
 
 namespace KuaforApp.Controllers;
 
@@ -38,7 +39,7 @@ public class MusterilerController : Controller
         {
             TenantId = _currentTenant.TenantId!.Value,
             AdSoyad = model.AdSoyad,
-            Telefon = model.Telefon
+            Telefon = TurkishPhoneNumberFormatter.Normalize(model.Telefon)
         };
 
         _context.Musteriler.Add(musteri);
@@ -65,7 +66,7 @@ public class MusterilerController : Controller
         if (musteri is null) return NotFound();
 
         musteri.AdSoyad = model.AdSoyad;
-        musteri.Telefon = model.Telefon;
+        musteri.Telefon = TurkishPhoneNumberFormatter.Normalize(model.Telefon);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
