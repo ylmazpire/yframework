@@ -45,4 +45,47 @@ public class MusterilerController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var musteri = await _context.Musteriler.FindAsync(id);
+        if (musteri is null) return NotFound();
+
+        return View(new MusteriEditViewModel { Id = musteri.Id, AdSoyad = musteri.AdSoyad, Telefon = musteri.Telefon });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(MusteriEditViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var musteri = await _context.Musteriler.FindAsync(model.Id);
+        if (musteri is null) return NotFound();
+
+        musteri.AdSoyad = model.AdSoyad;
+        musteri.Telefon = model.Telefon;
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var musteri = await _context.Musteriler.FindAsync(id);
+        if (musteri is null) return NotFound();
+
+        var randevusuVarMi = await _context.Randevular.AnyAsync(r => r.MusteriId == id);
+        if (randevusuVarMi)
+        {
+            TempData["Hata"] = $"\"{musteri.AdSoyad}\" silinemedi çünkü bu müşteriye ait randevu kayıtları var.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        _context.Musteriler.Remove(musteri);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
 }

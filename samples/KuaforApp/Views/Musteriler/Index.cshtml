@@ -8,6 +8,11 @@
     <a asp-action="Create" class="btn btn-primary">+ Yeni Müşteri</a>
 </div>
 
+@if (TempData["Hata"] is string hata)
+{
+    <div class="alert alert-danger">@hata</div>
+}
+
 @if (!Model.Any())
 {
     <p class="text-muted">Henüz müşteri eklenmemiş.</p>
@@ -18,19 +23,30 @@
     @foreach (var musteri in Model)
     {
         <div class="list-card">
-            <div class="list-card-title">@musteri.AdSoyad</div>
-            <div class="list-card-subtitle">@musteri.Telefon</div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="list-card-title">@musteri.AdSoyad</div>
+                    <div class="list-card-subtitle">@musteri.Telefon</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                    <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                    </form>
+                </div>
+            </div>
         </div>
     }
 </div>
 
 <!-- Masaüstü: tablo görünümü -->
 <div class="d-none d-lg-block surface-card">
-    <table class="table table-borderless mb-0">
+    <table class="table table-borderless mb-0 align-middle">
         <thead>
             <tr class="text-muted small text-uppercase">
                 <th>Ad Soyad</th>
                 <th>Telefon</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +55,12 @@
                 <tr>
                     <td>@musteri.AdSoyad</td>
                     <td>@musteri.Telefon</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                        <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" class="d-inline" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>

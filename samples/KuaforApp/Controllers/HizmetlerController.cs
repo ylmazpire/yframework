@@ -46,4 +46,54 @@ public class HizmetlerController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var hizmet = await _context.Hizmetler.FindAsync(id);
+        if (hizmet is null) return NotFound();
+
+        return View(new HizmetEditViewModel
+        {
+            Id = hizmet.Id,
+            Ad = hizmet.Ad,
+            SureDakika = hizmet.SureDakika,
+            Fiyat = hizmet.Fiyat
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(HizmetEditViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var hizmet = await _context.Hizmetler.FindAsync(model.Id);
+        if (hizmet is null) return NotFound();
+
+        hizmet.Ad = model.Ad;
+        hizmet.SureDakika = model.SureDakika;
+        hizmet.Fiyat = model.Fiyat;
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var hizmet = await _context.Hizmetler.FindAsync(id);
+        if (hizmet is null) return NotFound();
+
+        var randevusuVarMi = await _context.Randevular.AnyAsync(r => r.HizmetId == id);
+        if (randevusuVarMi)
+        {
+            TempData["Hata"] = $"\"{hizmet.Ad}\" silinemedi çünkü bu hizmete ait randevu kayıtları var.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        _context.Hizmetler.Remove(hizmet);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
 }
