@@ -1,3 +1,4 @@
+@using YFramework.Validation
 @model List<KuaforApp.Models.Musteri>
 @{
     ViewData["Title"] = "Müşteriler";
@@ -35,6 +36,12 @@
                     <div class="list-card-subtitle">@musteri.Telefon</div>
                 </a>
                 <div class="d-flex gap-2">
+                    @{ var e164 = TurkishPhoneNumberFormatter.ToE164(musteri.Telefon); }
+                    @if (e164 is not null)
+                    {
+                        <a href="tel:@e164" class="btn btn-sm btn-outline-secondary" title="Ara">📞</a>
+                        <a href="https://wa.me/@e164.TrimStart('+')" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary" title="WhatsApp">💬</a>
+                    }
                     <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
                     <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
                         <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
@@ -62,6 +69,12 @@
                     <td><a asp-action="Detay" asp-route-id="@musteri.Id">@musteri.AdSoyad</a></td>
                     <td>@musteri.Telefon</td>
                     <td class="text-end">
+                        @{ var e164Masaustu = TurkishPhoneNumberFormatter.ToE164(musteri.Telefon); }
+                        @if (e164Masaustu is not null)
+                        {
+                            <a href="tel:@e164Masaustu" class="btn btn-sm btn-outline-secondary" title="Ara">📞</a>
+                            <a href="https://wa.me/@e164Masaustu.TrimStart('+')" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary" title="WhatsApp">💬</a>
+                        }
                         <a asp-action="Edit" asp-route-id="@musteri.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
                         <form asp-action="Delete" asp-route-id="@musteri.Id" method="post" class="d-inline" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>

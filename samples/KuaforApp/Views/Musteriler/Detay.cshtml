@@ -1,4 +1,5 @@
 @using YFramework.Formatting
+@using YFramework.Validation
 @model KuaforApp.Models.MusteriDetayViewModel
 @{
     ViewData["Title"] = Model.Musteri.AdSoyad;
@@ -23,7 +24,15 @@
     <a asp-action="Index" class="btn btn-outline-secondary">← Müşteriler</a>
 </div>
 
-<p class="text-muted mb-4">@Model.Musteri.Telefon</p>
+@{ var musteriE164 = TurkishPhoneNumberFormatter.ToE164(Model.Musteri.Telefon); }
+<div class="d-flex align-items-center gap-2 mb-4">
+    <span class="text-muted">@Model.Musteri.Telefon</span>
+    @if (musteriE164 is not null)
+    {
+        <a href="tel:@musteriE164" class="btn btn-sm btn-outline-secondary">📞 Ara</a>
+        <a href="https://wa.me/@musteriE164.TrimStart('+')" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">💬 WhatsApp</a>
+    }
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-6">
