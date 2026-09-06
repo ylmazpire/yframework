@@ -1,0 +1,63 @@
+@model PanoViewModel
+@{
+    ViewData["Title"] = "Pano";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Pano</h2>
+    <a asp-controller="Domainler" asp-action="Create" class="btn btn-primary">+ Domain Ekle</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted small">Kritik</div><div class="fs-3 fw-bold text-danger">@(Model.Kritik)</div>
+    </div></div></div>
+    <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted small">Uyarı</div><div class="fs-3 fw-bold" style="color:#ffd60a">@Model.Uyari</div>
+    </div></div></div>
+    <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted small">Sağlıklı</div><div class="fs-3 fw-bold" style="color:#30d158">@Model.Saglikli</div>
+    </div></div></div>
+    <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body">
+        <div class="text-muted small">Kontrolsüz</div><div class="fs-3 fw-bold">@Model.Kontrolsuz</div>
+    </div></div></div>
+</div>
+
+@if (Model.Toplam == 0)
+{
+    <p class="text-muted">Henüz domain eklenmemiş. <a asp-controller="Domainler" asp-action="Create">İlk domaini ekle.</a></p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Alan adı</th><th>Durum</th><th>Kalan</th><th>Sağlayıcı</th><th>Son kontrol</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.Domainler)
+                    {
+                        <tr class="@(d.Aktif ? "" : "opacity-50")">
+                            <td class="fw-semibold">
+                                <a asp-controller="Domainler" asp-action="Detay" asp-route-id="@d.Id">@d.TargetAdi</a>
+                                @if (!d.Aktif) { <span class="text-muted small">(pasif)</span> }
+                            </td>
+                            <td><partial name="_Durum" model="d.SonSonuc" /></td>
+                            <td class="@(d.KalanGun is < 7 ? "text-danger fw-semibold" : "")">
+                                @(d.KalanGun is null ? "—" : $"{d.KalanGun} gün")
+                            </td>
+                            <td class="text-muted">@(d.Issuer ?? "—")</td>
+                            <td class="text-muted small">@(d.SonKontrolUtc is null ? "—" : d.SonKontrolUtc.Value.ToLocalTime().ToString("dd.MM HH:mm"))</td>
+                            <td class="text-end">
+                                <a asp-controller="Domainler" asp-action="Detay" asp-route-id="@d.Id" class="btn btn-sm btn-outline-secondary">Aç</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

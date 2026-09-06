@@ -1,0 +1,54 @@
+@{
+    string cc = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    bool authed = User.Identity?.IsAuthenticated == true;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>@ViewData["Title"] - SslWatchman</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-shell">
+        @if (authed)
+        {
+            <aside class="app-sidebar">
+                <a class="brand" asp-controller="Home" asp-action="Index">🔒 SslWatchman</a>
+                <nav class="nav flex-column">
+                    <a class="nav-link @(cc == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Pano</a>
+                    <a class="nav-link @(cc == "Domainler" ? "active" : "")" asp-controller="Domainler" asp-action="Index">🌐 Domainler</a>
+                    <a class="nav-link @(cc == "Ayarlar" ? "active" : "")" asp-controller="Ayarlar" asp-action="Index">⚙️ Ayarlar</a>
+                </nav>
+                <div class="mt-auto pt-3">
+                    <div class="text-muted small mb-2 px-2">@User.Identity!.Name</div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-link nav-link w-100 text-start px-2">🚪 Çıkış Yap</button>
+                    </form>
+                </div>
+            </aside>
+        }
+        <div class="app-main">
+            <header class="app-topbar">
+                <a class="brand-mobile" asp-controller="Home" asp-action="Index">🔒 SslWatchman</a>
+                @if (!authed)
+                {
+                    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                }
+                else
+                {
+                    <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                }
+            </header>
+            <main class="app-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
