@@ -1,0 +1,52 @@
+@using YFramework.Formatting
+@model List<OtoServisApp.Models.Gider>
+@{
+    ViewData["Title"] = "Giderler";
+    string Kat(OtoServisApp.Models.GiderKategorisi k) => k switch
+    {
+        OtoServisApp.Models.GiderKategorisi.ParcaAlimi => "Parça alımı",
+        OtoServisApp.Models.GiderKategorisi.Kira => "Kira",
+        OtoServisApp.Models.GiderKategorisi.Maas => "Maaş",
+        OtoServisApp.Models.GiderKategorisi.FaturaOdemesi => "Fatura ödemesi",
+        _ => "Diğer"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Giderler</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Gider</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz gider girilmemiş.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase"><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th class="text-end">Tutar</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in Model)
+                    {
+                        <tr>
+                            <td>@g.Tarih.ToString("dd.MM.yyyy")</td>
+                            <td>@Kat(g.Kategori)</td>
+                            <td>@g.Aciklama</td>
+                            <td class="text-end">@TurkishCurrencyFormatter.Format(g.Tutar)</td>
+                            <td class="text-end text-nowrap">
+                                <a asp-action="Edit" asp-route-id="@g.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                                <form asp-action="Delete" asp-route-id="@g.Id" method="post" class="d-inline" onsubmit="return confirm('Silinsin mi?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,234 @@
+@using YFramework.Validation
+@using YFramework.Formatting
+@model OtoServisApp.Models.IsEmriDetayViewModel
+@{
+    ViewData["Title"] = "İş Emri #" + Model.IsEmri.Id;
+    var e = Model.IsEmri;
+    var kanallar = ViewBag.Kanallar as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var ustalar = ViewBag.Ustalar as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    var parcalar = ViewBag.Parcalar as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+    string Dt(DateTime d) => d.ToString("yyyy-MM-ddTHH:mm");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">İş Emri #@e.Id</h2>
+    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+</div>
+
+@if (TempData["Hata"] is string hata)
+{
+    <div class="alert alert-danger">@hata</div>
+}
+@if (TempData["Bilgi"] is string bilgi)
+{
+    <div class="alert alert-success">@bilgi</div>
+}
+
+<div class="surface-card mb-4">
+    <dl class="row mb-0">
+        <dt class="col-4 col-sm-3 text-muted">Araç</dt>
+        <dd class="col-8 col-sm-9">
+            @(e.Arac is null ? "—" : TurkishLicensePlateFormatter.Bicimlendir(e.Arac.Plaka)) — @e.Arac?.Marka @e.Arac?.Model
+        </dd>
+        <dt class="col-4 col-sm-3 text-muted">Müşteri</dt>
+        <dd class="col-8 col-sm-9">@e.Arac?.Musteri?.AdSoyad (@e.Arac?.Musteri?.Telefon)</dd>
+        <dt class="col-4 col-sm-3 text-muted">Geliş</dt>
+        <dd class="col-8 col-sm-9">@e.GelisTarihi.ToString("dd.MM.yyyy HH:mm") @(e.GelisKilometresi is null ? "" : $"· {e.GelisKilometresi:N0} km")</dd>
+        <dt class="col-4 col-sm-3 text-muted">Şikâyet</dt>
+        <dd class="col-8 col-sm-9" style="white-space:pre-wrap">@e.MusteriSikayeti</dd>
+        <dt class="col-4 col-sm-3 text-muted">Durum</dt>
+        <dd class="col-8 col-sm-9">@e.Durum</dd>
+        <dt class="col-4 col-sm-3 text-muted">Plan</dt>
+        <dd class="col-8 col-sm-9">
+            @if (e.ServisKanali is not null && e.PlanlananBaslangic is not null && e.PlanlananBitis is not null)
+            {
+                <span>@e.ServisKanali.Ad, @e.PlanlananBaslangic.Value.ToString("dd.MM.yyyy HH:mm") - @e.PlanlananBitis.Value.ToString("HH:mm")</span>
+                @if (e.AtananPersonel is not null)
+                {
+                    <span> (@e.AtananPersonel.AdSoyad)</span>
+                }
+            }
+            else
+            {
+                <span class="text-muted">planlanmadı</span>
+            }
+        </dd>
+    </dl>
+    <div class="d-flex gap-2 flex-wrap mt-3">
+        @foreach (var d in new[] { OtoServisApp.Models.IsEmriDurumu.DevamEdiyor, OtoServisApp.Models.IsEmriDurumu.Tamamlandi, OtoServisApp.Models.IsEmriDurumu.TeslimEdildi, OtoServisApp.Models.IsEmriDurumu.Iptal })
+        {
+            @if (d != e.Durum)
+            {
+                <form asp-action="DurumDegistir" method="post">
+                    <input type="hidden" name="id" value="@e.Id" />
+                    <input type="hidden" name="durum" value="@d" />
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">@d</button>
+                </form>
+            }
+        }
+    </div>
+</div>
+
+<h4 class="mb-2">Planlama (servis kanalı)</h4>
+<div class="surface-card mb-4">
+    <form asp-action="Planla" method="post" class="row g-3">
+        <input type="hidden" name="Id" value="@Model.Plan.Id" />
+        <div class="col-12 col-sm-4">
+            <label class="form-label">Servis kanalı</label>
+            <select name="ServisKanaliId" class="form-select">
+                <option value="">— seçin —</option>
+                @foreach (var it in kanallar!)
+                {
+                    <option value="@it.Value" selected="@(it.Value == Model.Plan.ServisKanaliId.ToString())">@it.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-4">
+            <label class="form-label">Atanan usta</label>
+            <select name="AtananPersonelId" class="form-select">
+                <option value="">— (opsiyonel) —</option>
+                @foreach (var it in ustalar!)
+                {
+                    <option value="@it.Value" selected="@(it.Value == Model.Plan.AtananPersonelId?.ToString())">@it.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-sm-2">
+            <label class="form-label">Başlangıç</label>
+            <input type="datetime-local" name="PlanlananBaslangic" value="@Dt(Model.Plan.PlanlananBaslangic)" class="form-control" />
+        </div>
+        <div class="col-6 col-sm-2">
+            <label class="form-label">Bitiş</label>
+            <input type="datetime-local" name="PlanlananBitis" value="@Dt(Model.Plan.PlanlananBitis)" class="form-control" />
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Planla</button>
+            <span class="form-text ms-2">Seçilen kanal o saatte doluysa sistem boş kanalları önerir.</span>
+        </div>
+    </form>
+</div>
+
+<h4 class="mb-2">Kalemler</h4>
+<div class="surface-card mb-3">
+    <div class="table-responsive">
+        <table class="table table-borderless mb-0 align-middle">
+            <thead>
+                <tr class="text-muted small text-uppercase">
+                    <th>Tür</th><th>Açıklama</th><th class="text-end">Adet</th><th class="text-end">Birim</th>
+                    <th class="text-end">Ara Toplam</th><th class="text-end">KDV</th><th class="text-end">Toplam</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Kalemler.Any())
+                {
+                    <tr><td colspan="8" class="text-muted">Henüz kalem eklenmedi.</td></tr>
+                }
+                @foreach (var k in Model.Kalemler)
+                {
+                    <tr>
+                        <td>@(k.Tur == OtoServisApp.Models.KalemTuru.Parca ? "Parça" : "İşçilik")</td>
+                        <td>@k.Aciklama</td>
+                        <td class="text-end">@k.Adet.ToString("0.##")</td>
+                        <td class="text-end">@TurkishCurrencyFormatter.Format(k.BirimFiyat)</td>
+                        <td class="text-end">@TurkishCurrencyFormatter.Format(k.AraToplam)</td>
+                        <td class="text-end">%@((k.KdvOrani * 100).ToString("0.##"))<br /><span class="text-muted small">@TurkishCurrencyFormatter.Format(k.KdvTutari)</span></td>
+                        <td class="text-end fw-semibold">@TurkishCurrencyFormatter.Format(k.Toplam)</td>
+                        <td class="text-end">
+                            <form asp-action="KalemSil" method="post" onsubmit="return confirm('Kalem silinsin mi?');">
+                                <input type="hidden" name="id" value="@k.Id" />
+                                <input type="hidden" name="isEmriId" value="@e.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end text-muted">Ara toplam</td>
+                    <td class="text-end" colspan="2">@TurkishCurrencyFormatter.Format(Model.Ozet.AraToplam)</td>
+                    <td class="text-end"></td><td></td>
+                </tr>
+                @foreach (var kir in Model.Ozet.KdvKirilimleri)
+                {
+                    <tr>
+                        <td colspan="4" class="text-end text-muted">KDV %@((kir.Oran * 100).ToString("0.##")) (matrah @TurkishCurrencyFormatter.Format(kir.Matrah))</td>
+                        <td class="text-end" colspan="2">@TurkishCurrencyFormatter.Format(kir.KdvTutari)</td>
+                        <td class="text-end"></td><td></td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">Genel toplam</td>
+                    <td class="text-end fw-bold" colspan="2">@TurkishCurrencyFormatter.Format(Model.Ozet.GenelToplam)</td>
+                    <td class="text-end"></td><td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="surface-card mb-4">
+    @if (Model.Fatura is not null)
+    {
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>Fatura kesildi: <strong>@Model.Fatura.FaturaNo</strong> (@Model.Fatura.Tarih.ToString("dd.MM.yyyy")) — @TurkishCurrencyFormatter.Format(Model.Fatura.GenelToplam)</div>
+            <a asp-controller="Faturalar" asp-action="Detay" asp-route-id="@Model.Fatura.Id" class="btn btn-sm btn-outline-secondary">Faturayı gör</a>
+        </div>
+    }
+    else if (Model.FaturaKesilebilir)
+    {
+        <form asp-controller="Faturalar" asp-action="Olustur" method="post">
+            <input type="hidden" name="isEmriId" value="@e.Id" />
+            <button type="submit" class="btn btn-primary">Fatura Oluştur</button>
+            <span class="form-text ms-2">Kiracı + yıl bazlı sıralı numara verilir (ör. @DateTime.Now.Year-000001).</span>
+        </form>
+    }
+    else
+    {
+        <span class="text-muted">Fatura kesmek için iş emri "Tamamlandı" durumunda olmalı ve en az bir kalem içermeli.</span>
+    }
+</div>
+
+<div class="surface-card">
+    <form asp-action="KalemEkle" method="post" class="row g-3">
+        <input type="hidden" name="IsEmriId" value="@e.Id" />
+        <div class="col-6 col-sm-3">
+            <label class="form-label">Tür</label>
+            <select name="Tur" class="form-select" id="kalemTur">
+                <option value="Iscilik">İşçilik</option>
+                <option value="Parca">Parça</option>
+            </select>
+        </div>
+        <div class="col-6 col-sm-3">
+            <label class="form-label">Katalog parçası</label>
+            <select name="ParcaId" class="form-select">
+                <option value="">— (işçilikte boş) —</option>
+                @foreach (var it in parcalar!)
+                {
+                    <option value="@it.Value">@it.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Açıklama</label>
+            <input name="Aciklama" class="form-control" required />
+        </div>
+        <div class="col-4 col-sm-3">
+            <label class="form-label">Adet</label>
+            <input name="Adet" type="number" step="0.01" value="1" class="form-control" />
+        </div>
+        <div class="col-4 col-sm-3">
+            <label class="form-label">Birim fiyat</label>
+            <input name="BirimFiyat" type="number" step="0.01" value="0" class="form-control" />
+        </div>
+        <div class="col-4 col-sm-3">
+            <label class="form-label">KDV oranı</label>
+            <input name="KdvOrani" type="number" step="0.01" value="0.20" class="form-control" />
+        </div>
+        <div class="col-12 col-sm-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Kalem Ekle</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

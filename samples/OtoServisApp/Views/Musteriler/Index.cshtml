@@ -1,0 +1,64 @@
+@using YFramework.Validation
+@model List<OtoServisApp.Models.Musteri>
+@{
+    ViewData["Title"] = "Müşteriler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Müşteriler</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Müşteri</a>
+</div>
+
+@if (TempData["Hata"] is string hata)
+{
+    <div class="alert alert-danger">@hata</div>
+}
+
+<form method="get" class="mb-3">
+    <input type="search" name="ara" value="@ViewData["Ara"]" class="form-control" placeholder="İsim, telefon veya vergi no ara..." />
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">
+        @(string.IsNullOrWhiteSpace(ViewData["Ara"] as string) ? "Henüz müşteri eklenmemiş." : "Aramanla eşleşen müşteri bulunamadı.")
+    </p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Ad Soyad / Unvan</th>
+                        <th>Telefon</th>
+                        <th>Vergi / T.C. No</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model)
+                    {
+                        <tr>
+                            <td><a asp-action="Detay" asp-route-id="@m.Id">@m.AdSoyad</a></td>
+                            <td>@m.Telefon</td>
+                            <td>@(m.VergiKimlikNo ?? "—")</td>
+                            <td class="text-end text-nowrap">
+                                @{ var e164 = TurkishPhoneNumberFormatter.ToE164(m.Telefon); }
+                                @if (e164 is not null)
+                                {
+                                    <a href="tel:@e164" class="btn btn-sm btn-outline-secondary" title="Ara">📞</a>
+                                }
+                                <a asp-action="Edit" asp-route-id="@m.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                                <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline" onsubmit="return confirm('Bu müşteriyi silmek istediğine emin misin?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

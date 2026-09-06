@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<h1 class="mb-4">Ana Sayfa</h1>
+
+<div class="row g-3">
+    <div class="col-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Açık iş emri</div>
+            <div class="fs-3 fw-bold">@ViewData["AcikIsEmri"]</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Müşteri</div>
+            <div class="fs-3 fw-bold">@ViewData["MusteriSayisi"]</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Kayıtlı araç</div>
+            <div class="fs-3 fw-bold">@ViewData["AracSayisi"]</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Parça çeşidi</div>
+            <div class="fs-3 fw-bold">@ViewData["ParcaSayisi"]</div>
+        </div></div>
+    </div>
+</div>
+
+<p class="text-muted mt-4">
+    İş emirleri, araç ve müşteri kayıtları, parça/stok ve planlama ekranları sıradaki adımlarda eklenecek.
+</p>

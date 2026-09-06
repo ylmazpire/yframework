@@ -1,0 +1,33 @@
+@model OtoServisApp.Models.MusteriCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Müşteri";
+}
+
+<h2 class="mb-4">Yeni Müşteri</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="AdSoyad" class="form-label"></label>
+            <input asp-for="AdSoyad" class="form-control" />
+            <span asp-validation-for="AdSoyad" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Telefon" class="form-label"></label>
+            <input asp-for="Telefon" class="form-control" inputmode="numeric" placeholder="0 533 598 32 12" />
+            <span asp-validation-for="Telefon" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="VergiKimlikNo" class="form-label"></label>
+            <input asp-for="VergiKimlikNo" class="form-control" inputmode="numeric" placeholder="Kurumsal: 10 hane / Bireysel: 11 hane" />
+            <span asp-validation-for="VergiKimlikNo" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

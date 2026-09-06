@@ -1,0 +1,48 @@
+@model List<YFramework.Inventory.StockMovement>
+@{
+    var parca = ViewBag.Parca as OtoServisApp.Models.Parca;
+    var eldekiLedger = (decimal)ViewBag.EldekiLedger;
+    ViewData["Title"] = "Stok Hareketleri — " + parca?.Ad;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">@parca?.StokKodu — @parca?.Ad</h2>
+    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+</div>
+
+<div class="surface-card mb-4">
+    <dl class="row mb-0">
+        <dt class="col-6 col-sm-4 text-muted">Karttaki stok (hızlı okuma)</dt>
+        <dd class="col-6 col-sm-8">@parca?.StokAdedi</dd>
+        <dt class="col-6 col-sm-4 text-muted">Defter toplamı (hareketler)</dt>
+        <dd class="col-6 col-sm-8">@eldekiLedger.ToString("0.##")</dd>
+    </dl>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Bu parça için stok hareketi yok.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase"><th>Zaman</th><th>Sebep</th><th>Referans</th><th class="text-end">Miktar</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model)
+                    {
+                        <tr>
+                            <td>@m.Zaman.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@m.Sebep</td>
+                            <td class="text-muted">@m.Referans</td>
+                            <td class="text-end @(m.Miktar < 0 ? "text-danger" : "")">@(m.Miktar > 0 ? "+" : "")@m.Miktar.ToString("0.##")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

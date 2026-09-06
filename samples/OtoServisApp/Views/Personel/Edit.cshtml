@@ -1,0 +1,17 @@
+@model OtoServisApp.Models.PersonelFormViewModel
+@{
+    ViewData["Title"] = "Personeli Düzenle";
+}
+
+<h2 class="mb-4">Personeli Düzenle</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <partial name="_Form" model="Model" />
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

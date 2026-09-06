@@ -139,8 +139,10 @@ public class RandevularController : Controller
 
         var mevcutRandevular = await mevcutRandevularSorgu.ToListAsync();
 
-        var cakisiyorMu = mevcutRandevular.Any(r =>
-            OverlapChecker.Overlaps(yeniBaslangic, yeniBitis, r.BaslangicZamani, r.BitisZamani));
+        var cakisiyorMu = ResourceScheduler.HasConflict(
+            mevcutRandevular,
+            r => new TimeRange(r.BaslangicZamani, r.BitisZamani),
+            new TimeRange(yeniBaslangic, yeniBitis));
 
         if (cakisiyorMu)
         {

@@ -1,0 +1,74 @@
+@using YFramework.Formatting
+@using YFramework.Validation
+@using YFramework.Reporting
+@model OtoServisApp.Models.Fatura
+@{
+    ViewData["Title"] = "Fatura " + Model.FaturaNo;
+    var ozet = ViewBag.Ozet as FaturaOzeti;
+    var kalemler = ViewBag.Kalemler as List<OtoServisApp.Models.IsEmriKalemi> ?? new();
+    var arac = Model.IsEmri?.Arac;
+    var musteri = arac?.Musteri;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Fatura @Model.FaturaNo</h2>
+    <div class="d-flex gap-2">
+        <a asp-controller="IsEmirleri" asp-action="Detay" asp-route-id="@Model.IsEmriId" class="btn btn-outline-secondary">İş emri</a>
+        <a asp-action="Index" class="btn btn-secondary">Geri</a>
+        <button type="button" onclick="window.print()" class="btn btn-outline-secondary">Yazdır</button>
+    </div>
+</div>
+
+<div class="surface-card mb-4">
+    <dl class="row mb-0">
+        <dt class="col-4 col-sm-3 text-muted">Fatura No</dt><dd class="col-8 col-sm-9">@Model.FaturaNo</dd>
+        <dt class="col-4 col-sm-3 text-muted">Tarih</dt><dd class="col-8 col-sm-9">@Model.Tarih.ToString("dd.MM.yyyy HH:mm")</dd>
+        <dt class="col-4 col-sm-3 text-muted">Müşteri</dt>
+        <dd class="col-8 col-sm-9">@musteri?.AdSoyad @(string.IsNullOrEmpty(musteri?.VergiKimlikNo) ? "" : $"· VKN/TCKN: {musteri!.VergiKimlikNo}")</dd>
+        <dt class="col-4 col-sm-3 text-muted">Araç</dt>
+        <dd class="col-8 col-sm-9">@(arac is null ? "—" : TurkishLicensePlateFormatter.Bicimlendir(arac.Plaka)) — @arac?.Marka @arac?.Model</dd>
+    </dl>
+</div>
+
+<div class="surface-card">
+    <div class="table-responsive">
+        <table class="table table-borderless mb-0 align-middle">
+            <thead>
+                <tr class="text-muted small text-uppercase">
+                    <th>Açıklama</th><th class="text-end">Adet</th><th class="text-end">Birim</th><th class="text-end">KDV</th><th class="text-end">Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var k in kalemler)
+                {
+                    <tr>
+                        <td>@k.Aciklama <span class="text-muted small">(@(k.Tur == OtoServisApp.Models.KalemTuru.Parca ? "parça" : "işçilik"))</span></td>
+                        <td class="text-end">@k.Adet.ToString("0.##")</td>
+                        <td class="text-end">@TurkishCurrencyFormatter.Format(k.BirimFiyat)</td>
+                        <td class="text-end">%@((k.KdvOrani * 100).ToString("0.##"))</td>
+                        <td class="text-end">@TurkishCurrencyFormatter.Format(k.AraToplam)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="4" class="text-end text-muted">Ara toplam</td><td class="text-end">@TurkishCurrencyFormatter.Format(Model.AraToplam)</td></tr>
+                @if (ozet is not null)
+                {
+                    @foreach (var kir in ozet.KdvKirilimleri)
+                    {
+                        <tr><td colspan="4" class="text-end text-muted">KDV %@((kir.Oran * 100).ToString("0.##"))</td><td class="text-end">@TurkishCurrencyFormatter.Format(kir.KdvTutari)</td></tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" class="text-end text-muted">Toplam KDV</td><td class="text-end">@TurkishCurrencyFormatter.Format(Model.ToplamKdv)</td></tr>
+                }
+                <tr><td colspan="4" class="text-end fw-bold">Genel toplam</td><td class="text-end fw-bold">@TurkishCurrencyFormatter.Format(Model.GenelToplam)</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<p class="text-muted small mt-2">
+    Tutarlar fatura kesildiği andaki anlık görüntüdür; KDV kırılımı canlı kalemlerden
+    <code>YFramework.Reporting.InvoiceCalculator</code> ile hesaplanır.
+</p>
