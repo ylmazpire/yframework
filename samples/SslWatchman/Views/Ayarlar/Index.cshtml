@@ -2,27 +2,29 @@
 @{
     ViewData["Title"] = "Ayarlar";
 }
-<h2 class="mb-4">Ayarlar</h2>
+<div class="page-head">
+    <div><h1>Ayarlar</h1><div class="page-sub">Uyarı ve eşik yapılandırması</div></div>
+</div>
 
 @if (TempData["Bilgi"] is string bilgi)
 {
     <div class="alert alert-success">@bilgi</div>
 }
 
-<div class="col-12 col-md-7">
+<div class="panel panel-pad" style="max-width:620px">
     <form asp-action="Index" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="mb-3">
             <label asp-for="WebhookUrl" class="form-label"></label>
-            <input asp-for="WebhookUrl" class="form-control" placeholder="https://discord.com/api/webhooks/..." />
-            <span asp-validation-for="WebhookUrl" class="text-danger"></span>
+            <input asp-for="WebhookUrl" class="form-control mono" placeholder="https://discord.com/api/webhooks/..." />
+            <span asp-validation-for="WebhookUrl" class="text-danger small"></span>
             <div class="form-text">Bir domainin durumu değişince (ör. Sağlıklı → Uyarı) buraya JSON POST edilir. Slack/Discord webhook'ları uyumlu. Boş bırakılırsa uyarı gönderilmez.</div>
         </div>
-        <div class="mb-3 col-6">
+        <div class="mb-3 col-4">
             <label asp-for="UyariEsigiGun" class="form-label"></label>
-            <input asp-for="UyariEsigiGun" class="form-control" type="number" />
-            <span asp-validation-for="UyariEsigiGun" class="text-danger"></span>
-            <div class="form-text">Sertifika bitişine bu kadar gün kala "Uyarı" durumuna geçilir. (7 günden az kalınca "Kritik".)</div>
+            <input asp-for="UyariEsigiGun" class="form-control mono" type="number" />
+            <span asp-validation-for="UyariEsigiGun" class="text-danger small"></span>
+            <div class="form-text">Bitişe bu kadar gün kala "Uyarı"; 7 günden az kalınca "Kritik".</div>
         </div>
         <button type="submit" class="btn btn-primary">Kaydet</button>
     </form>

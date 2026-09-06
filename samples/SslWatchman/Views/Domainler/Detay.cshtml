@@ -4,14 +4,17 @@
     var d = Model.Domain;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h2 class="mb-0">@d.TargetAdi</h2>
-    <div class="d-flex gap-2">
+<div class="page-head">
+    <div>
+        <h1 class="mono">@d.TargetAdi</h1>
+        <div class="page-sub"><partial name="_Durum" model="d.SonSonuc" /> <span class="muted">@d.SonKontrolMesaji</span></div>
+    </div>
+    <div class="page-actions">
         <form asp-action="SimdiKontrolEt" asp-route-id="@d.Id" method="post">
-            <button type="submit" class="btn btn-primary">Şimdi Kontrol Et</button>
+            <button type="submit" class="btn btn-primary">Şimdi kontrol et</button>
         </form>
         <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-outline-secondary">Düzenle</a>
-        <a asp-action="Index" class="btn btn-secondary">Geri</a>
+        <a asp-action="Index" class="btn btn-secondary">← Geri</a>
     </div>
 </div>
 
@@ -20,45 +23,50 @@
     <div class="alert alert-info">@bilgi</div>
 }
 
-<div class="surface-card mb-4">
-    <dl class="row mb-0">
-        <dt class="col-4 col-sm-3 text-muted">Durum</dt>
-        <dd class="col-8 col-sm-9"><partial name="_Durum" model="d.SonSonuc" /> <span class="text-muted">@d.SonKontrolMesaji</span></dd>
-        <dt class="col-4 col-sm-3 text-muted">Sertifika bitişi</dt>
-        <dd class="col-8 col-sm-9">
+<div class="panel panel-pad mb-4">
+    <dl class="kv">
+        <dt>Sertifika bitişi</dt>
+        <dd>
             @(d.SertifikaBitisUtc is null ? "—" : d.SertifikaBitisUtc.Value.ToLocalTime().ToString("dd.MM.yyyy"))
-            @(d.KalanGun is null ? "" : $"({d.KalanGun} gün kaldı)")
+            @if (d.KalanGun is not null)
+            {
+                <span class="muted">· @d.KalanGun gün kaldı</span>
+            }
         </dd>
-        <dt class="col-4 col-sm-3 text-muted">Sağlayıcı</dt>
-        <dd class="col-8 col-sm-9">@(d.Issuer ?? "—")</dd>
-        <dt class="col-4 col-sm-3 text-muted">Son kontrol</dt>
-        <dd class="col-8 col-sm-9">@(d.SonKontrolUtc is null ? "—" : d.SonKontrolUtc.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))</dd>
+        <dt>Sağlayıcı</dt>
+        <dd>@(d.Issuer ?? "—")</dd>
+        <dt>Port</dt>
+        <dd class="mono">@d.Port</dd>
+        <dt>Son kontrol</dt>
+        <dd class="muted">@(d.SonKontrolUtc is null ? "—" : d.SonKontrolUtc.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))</dd>
+        <dt>Aktif</dt>
+        <dd>@(d.Aktif ? "evet" : "hayır")</dd>
         @if (!string.IsNullOrWhiteSpace(d.Not))
         {
-            <dt class="col-4 col-sm-3 text-muted">Not</dt>
-            <dd class="col-8 col-sm-9">@d.Not</dd>
+            <dt>Not</dt>
+            <dd>@d.Not</dd>
         }
     </dl>
 </div>
 
-<h4 class="mb-2">Kontrol geçmişi</h4>
+<div class="section-head">Kontrol geçmişi <span class="count">@Model.Gecmis.Count</span></div>
 @if (!Model.Gecmis.Any())
 {
-    <p class="text-muted">Henüz kontrol kaydı yok.</p>
+    <div class="panel panel-pad muted">Henüz kontrol kaydı yok.</div>
 }
 else
 {
-    <div class="surface-card">
-        <div class="table-responsive">
-            <table class="table table-borderless mb-0 align-middle">
+    <div class="panel">
+        <div class="table-wrap">
+            <table class="data-table">
                 <thead>
-                    <tr class="text-muted small text-uppercase"><th>Zaman</th><th>Sonuç</th><th>Mesaj</th></tr>
+                    <tr><th>Zaman</th><th>Sonuç</th><th>Mesaj</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var c in Model.Gecmis)
                     {
                         <tr>
-                            <td class="text-muted small text-nowrap">@c.ZamanUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="muted small text-nowrap mono">@c.ZamanUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                             <td><partial name="_Durum" model="c.Sonuc" /></td>
                             <td>@c.Mesaj</td>
                         </tr>

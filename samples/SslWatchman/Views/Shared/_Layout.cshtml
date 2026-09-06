@@ -8,7 +8,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
-    <title>@ViewData["Title"] - SslWatchman</title>
+    <meta name="color-scheme" content="dark light" />
+    <title>@ViewData["Title"] · SslWatchman</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -18,15 +19,22 @@
         {
             <aside class="app-sidebar">
                 <a class="brand" asp-controller="Home" asp-action="Index">🔒 SslWatchman</a>
+
+                <div class="nav-group-label">İzleme</div>
                 <nav class="nav flex-column">
-                    <a class="nav-link @(cc == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Pano</a>
-                    <a class="nav-link @(cc == "Domainler" ? "active" : "")" asp-controller="Domainler" asp-action="Index">🌐 Domainler</a>
-                    <a class="nav-link @(cc == "Ayarlar" ? "active" : "")" asp-controller="Ayarlar" asp-action="Index">⚙️ Ayarlar</a>
+                    <a class="nav-link @(cc == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><span>◫</span> Pano</a>
+                    <a class="nav-link @(cc == "Domainler" ? "active" : "")" asp-controller="Domainler" asp-action="Index"><span>⬡</span> Domainler</a>
                 </nav>
-                <div class="mt-auto pt-3">
-                    <div class="text-muted small mb-2 px-2">@User.Identity!.Name</div>
+
+                <div class="nav-group-label">Sistem</div>
+                <nav class="nav flex-column">
+                    <a class="nav-link @(cc == "Ayarlar" ? "active" : "")" asp-controller="Ayarlar" asp-action="Index"><span>⚙</span> Ayarlar</a>
+                </nav>
+
+                <div class="sidebar-foot">
+                    <div class="mb-2">@User.Identity!.Name</div>
                     <form asp-controller="Account" asp-action="Logout" method="post">
-                        <button type="submit" class="btn btn-link nav-link w-100 text-start px-2">🚪 Çıkış Yap</button>
+                        <button type="submit" class="btn btn-link">Çıkış yap →</button>
                     </form>
                 </div>
             </aside>
@@ -36,11 +44,11 @@
                 <a class="brand-mobile" asp-controller="Home" asp-action="Index">🔒 SslWatchman</a>
                 @if (!authed)
                 {
-                    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Giriş yap</a>
                 }
                 else
                 {
-                    <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                    <span class="small muted">@User.Identity!.Name</span>
                 }
             </header>
             <main class="app-content">

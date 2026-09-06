@@ -3,31 +3,36 @@
     ViewData["Title"] = "Domainler";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h2 class="mb-0">Domainler</h2>
-    <a asp-action="Create" class="btn btn-primary">+ Domain Ekle</a>
+<div class="page-head">
+    <div>
+        <h1>Domainler</h1>
+        <div class="page-sub">İzlenen alan adlarını yönet</div>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary">+ Domain ekle</a>
+    </div>
 </div>
 
 @if (!Model.Any())
 {
-    <p class="text-muted">Henüz domain eklenmemiş.</p>
+    <div class="panel panel-pad muted">Henüz alan adı eklenmemiş.</div>
 }
 else
 {
-    <div class="surface-card">
-        <div class="table-responsive">
-            <table class="table table-borderless mb-0 align-middle">
+    <div class="panel">
+        <div class="table-wrap">
+            <table class="data-table">
                 <thead>
-                    <tr class="text-muted small text-uppercase"><th>Alan adı</th><th>Durum</th><th>Kalan</th><th>Aktif</th><th></th></tr>
+                    <tr><th>Alan adı</th><th>Durum</th><th class="num">Kalan</th><th>Aktif</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var d in Model)
                     {
                         <tr>
-                            <td class="fw-semibold"><a asp-action="Detay" asp-route-id="@d.Id">@d.TargetAdi</a></td>
+                            <td><a class="mono fw-semibold" asp-action="Detay" asp-route-id="@d.Id">@d.TargetAdi</a></td>
                             <td><partial name="_Durum" model="d.SonSonuc" /></td>
-                            <td>@(d.KalanGun is null ? "—" : $"{d.KalanGun} gün")</td>
-                            <td>@(d.Aktif ? "evet" : "hayır")</td>
+                            <td class="num mono">@(d.KalanGun is null ? "—" : $"{d.KalanGun}g")</td>
+                            <td class="muted small">@(d.Aktif ? "evet" : "hayır")</td>
                             <td class="text-end text-nowrap">
                                 <a asp-action="Edit" asp-route-id="@d.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
                                 <form asp-action="Delete" asp-route-id="@d.Id" method="post" class="d-inline" onsubmit="return confirm('Bu domain ve geçmişi silinsin mi?');">

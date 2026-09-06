@@ -1,12 +1,12 @@
 @model CheckOutcome?
 @{
-    var (etiket, renk) = Model switch
+    var (etiket, cls) = Model switch
     {
-        CheckOutcome.Ok => ("Sağlıklı", "#30d158"),
-        CheckOutcome.Warning => ("Uyarı", "#ffd60a"),
-        CheckOutcome.Error => ("Erişilemedi", "#ff9f0a"),
-        CheckOutcome.Critical => ("Kritik", "#ff453a"),
-        _ => ("Kontrol edilmedi", "#8e8e93")
+        CheckOutcome.Ok => ("Sağlıklı", "ok"),
+        CheckOutcome.Warning => ("Uyarı", "warn"),
+        CheckOutcome.Error => ("Erişilemedi", "err"),
+        CheckOutcome.Critical => ("Kritik", "crit"),
+        _ => ("Kontrol edilmedi", "")
     };
 }
-<span class="badge" style="background:@renk; color:#000; font-weight:600;">@etiket</span>
+<span class="pill @cls">@etiket</span>

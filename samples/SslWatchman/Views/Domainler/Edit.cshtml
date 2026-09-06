@@ -1,14 +1,20 @@
 @model DomainFormViewModel
 @{
-    ViewData["Title"] = "Domaini Düzenle";
+    ViewData["Title"] = "Domaini düzenle";
 }
-<h2 class="mb-4">Domaini Düzenle</h2>
-<div class="col-12 col-md-7">
+<div class="page-head">
+    <div><h1>Domaini düzenle</h1></div>
+    <div class="page-actions"><a asp-action="Index" class="btn btn-secondary">← Geri</a></div>
+</div>
+
+<div class="panel panel-pad" style="max-width:620px">
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
         <partial name="_Form" model="Model" />
-        <button type="submit" class="btn btn-primary">Kaydet</button>
-        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </div>
     </form>
 </div>
 @section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }
