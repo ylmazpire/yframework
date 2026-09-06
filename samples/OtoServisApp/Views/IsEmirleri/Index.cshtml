@@ -1,0 +1,75 @@
+@using YFramework.Validation
+@model List<OtoServisApp.Models.IsEmri>
+@{
+    ViewData["Title"] = "İş Emirleri";
+    var filtre = ViewData["Filtre"] as string ?? "acik";
+    string DurumEtiket(OtoServisApp.Models.IsEmriDurumu d) => d switch
+    {
+        OtoServisApp.Models.IsEmriDurumu.Beklemede => "Beklemede",
+        OtoServisApp.Models.IsEmriDurumu.DevamEdiyor => "Devam ediyor",
+        OtoServisApp.Models.IsEmriDurumu.Tamamlandi => "Tamamlandı",
+        OtoServisApp.Models.IsEmriDurumu.TeslimEdildi => "Teslim edildi",
+        OtoServisApp.Models.IsEmriDurumu.Iptal => "İptal",
+        _ => d.ToString()
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">İş Emirleri</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni İş Emri</a>
+</div>
+
+<div class="btn-group mb-3">
+    <a asp-action="Index" asp-route-filtre="acik" class="btn btn-sm @(filtre == "acik" ? "btn-primary" : "btn-outline-secondary")">Açık</a>
+    <a asp-action="Index" asp-route-filtre="tamamlanan" class="btn btn-sm @(filtre == "tamamlanan" ? "btn-primary" : "btn-outline-secondary")">Tamamlanan</a>
+    <a asp-action="Index" asp-route-filtre="tumu" class="btn btn-sm @(filtre == "tumu" ? "btn-primary" : "btn-outline-secondary")">Tümü</a>
+</div>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="filtre" value="@filtre" />
+    <input type="search" name="ara" value="@ViewData["Ara"]" class="form-control" placeholder="Plaka, müşteri veya şikâyet ara..." />
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Kayıt bulunamadı.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Geliş</th><th>Araç</th><th>Müşteri</th><th>Durum</th><th>Kanal / Plan</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td>@e.GelisTarihi.ToString("dd.MM.yyyy")</td>
+                            <td class="fw-semibold">
+                                @(e.Arac is null ? "—" : TurkishLicensePlateFormatter.Bicimlendir(e.Arac.Plaka))
+                                <div class="text-muted small">@e.Arac?.Marka @e.Arac?.Model</div>
+                            </td>
+                            <td>@e.Arac?.Musteri?.AdSoyad</td>
+                            <td>@DurumEtiket(e.Durum)</td>
+                            <td>
+                                @if (e.ServisKanali is not null && e.PlanlananBaslangic is not null)
+                                {
+                                    <span>@e.ServisKanali.Ad, @e.PlanlananBaslangic.Value.ToString("dd.MM HH:mm")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">planlanmadı</span>
+                                }
+                            </td>
+                            <td class="text-end"><a asp-action="Detay" asp-route-id="@e.Id" class="btn btn-sm btn-outline-secondary">Aç</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,112 @@
+@using OtoServisApp
+@{
+    bool isPlatformAdmin = User.IsInRole("Admin");
+    bool isServisAdmini = User.IsInRole(AppRoles.ServisAdmini);
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="OtoServisApp" />
+    <script>
+        // Sayfa çizilmeden önce tema tercihini uygula ki geçişte yanıp sönme (flash) olmasın.
+        (function () {
+            var kayitliTema = localStorage.getItem('tema');
+            if (kayitliTema === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    <link rel="manifest" href="~/manifest.json" />
+    <link rel="apple-touch-icon" href="~/icons/icon-192.png" />
+    <link rel="icon" href="~/icons/icon-192.png" />
+    <title>@ViewData["Title"] - OtoServisApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-shell">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <aside class="app-sidebar">
+                <a class="brand" asp-controller="Home" asp-action="Index">🔧 OtoServisApp</a>
+                <nav class="nav flex-column">
+                    @if (isServisAdmini)
+                    {
+                        <a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">🏠 Ana Sayfa</a>
+                        <a class="nav-link @(currentController == "IsEmirleri" ? "active" : "")" asp-controller="IsEmirleri" asp-action="Index">🧾 İş Emirleri</a>
+                        <a class="nav-link @(currentController == "Faturalar" ? "active" : "")" asp-controller="Faturalar" asp-action="Index">🧮 Faturalar</a>
+                        <a class="nav-link @(currentController == "Giderler" ? "active" : "")" asp-controller="Giderler" asp-action="Index">💸 Giderler</a>
+                        <a class="nav-link @(currentController == "Muhasebe" ? "active" : "")" asp-controller="Muhasebe" asp-action="Index">📊 Muhasebe</a>
+                        <a class="nav-link @(currentController == "Araclar" ? "active" : "")" asp-controller="Araclar" asp-action="Index">🚗 Araçlar</a>
+                        <a class="nav-link @(currentController == "Musteriler" ? "active" : "")" asp-controller="Musteriler" asp-action="Index">👥 Müşteriler</a>
+                        <a class="nav-link @(currentController == "Parcalar" ? "active" : "")" asp-controller="Parcalar" asp-action="Index">📦 Parça / Stok</a>
+                        <a class="nav-link @(currentController == "Personel" ? "active" : "")" asp-controller="Personel" asp-action="Index">👷 Personel</a>
+                        <a class="nav-link @(currentController == "ServisKanallari" ? "active" : "")" asp-controller="ServisKanallari" asp-action="Index">🔩 Servis Kanalları</a>
+                    }
+                    else if (isPlatformAdmin)
+                    {
+                        <a class="nav-link @(currentController == "Isletmeler" ? "active" : "")" asp-controller="Isletmeler" asp-action="Index">🏢 İşletmeler</a>
+                    }
+                </nav>
+                <div class="mt-auto pt-3">
+                    <button type="button" id="temaButonuMasaustu" class="btn btn-link nav-link w-100 text-start px-2">🌙 Koyu / Açık Tema</button>
+                    <div class="text-muted small mb-2 px-2">@User.Identity!.Name</div>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-link nav-link w-100 text-start px-2">🚪 Çıkış Yap</button>
+                    </form>
+                </div>
+            </aside>
+        }
+        <div class="app-main">
+            <header class="app-topbar">
+                <a class="brand-mobile" asp-controller="Home" asp-action="Index">🔧 OtoServisApp</a>
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small d-none d-sm-inline">@User.Identity!.Name</span>
+                        <button type="button" id="temaButonuMobil" class="btn btn-sm btn-outline-secondary d-lg-none">🌙</button>
+                    </div>
+                }
+            </header>
+
+            <main class="app-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function (err) {
+                    console.warn('Service worker kaydı yapılamadı:', err);
+                });
+            });
+        }
+
+        (function () {
+            function temayiDegistir() {
+                var suanKoyuMu = document.documentElement.getAttribute('data-theme') !== 'light';
+                localStorage.setItem('tema', suanKoyuMu ? 'light' : 'dark');
+                location.reload();
+            }
+            var b1 = document.getElementById('temaButonuMasaustu');
+            var b2 = document.getElementById('temaButonuMobil');
+            if (b1) b1.addEventListener('click', temayiDegistir);
+            if (b2) b2.addEventListener('click', temayiDegistir);
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

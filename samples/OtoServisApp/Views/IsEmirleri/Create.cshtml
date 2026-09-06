@@ -1,0 +1,35 @@
+@model OtoServisApp.Models.IsEmriCreateViewModel
+@{
+    ViewData["Title"] = "Yeni İş Emri";
+    var araclar = ViewBag.Araclar as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<h2 class="mb-4">Yeni İş Emri</h2>
+
+<div class="col-12 col-md-7">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="AracId" class="form-label"></label>
+            <select asp-for="AracId" asp-items="araclar" class="form-select">
+                <option value="">— Araç seçin —</option>
+            </select>
+            <span asp-validation-for="AracId" class="text-danger"></span>
+            <div class="form-text">Araç kayıtlı değilse önce <a asp-controller="Araclar" asp-action="Create">araç ekleyin</a>.</div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="MusteriSikayeti" class="form-label"></label>
+            <textarea asp-for="MusteriSikayeti" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="MusteriSikayeti" class="text-danger"></span>
+        </div>
+        <div class="mb-3 col-6">
+            <label asp-for="GelisKilometresi" class="form-label"></label>
+            <input asp-for="GelisKilometresi" class="form-control" type="number" />
+            <span asp-validation-for="GelisKilometresi" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Oluştur</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

@@ -1,0 +1,55 @@
+@model OtoServisApp.Models.AracCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Araç";
+    var musteriler = ViewBag.Musteriler as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<h2 class="mb-4">Yeni Araç</h2>
+
+<div class="col-12 col-md-6">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="MusteriId" class="form-label"></label>
+            <select asp-for="MusteriId" asp-items="musteriler" class="form-select">
+                <option value="">— Müşteri seçin —</option>
+            </select>
+            <span asp-validation-for="MusteriId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Plaka" class="form-label"></label>
+            <input asp-for="Plaka" class="form-control" placeholder="34 ABC 123" />
+            <span asp-validation-for="Plaka" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-7 mb-3">
+                <label asp-for="Marka" class="form-label"></label>
+                <input asp-for="Marka" class="form-control" />
+                <span asp-validation-for="Marka" class="text-danger"></span>
+            </div>
+            <div class="col-5 mb-3">
+                <label asp-for="ModelYili" class="form-label"></label>
+                <input asp-for="ModelYili" class="form-control" type="number" />
+                <span asp-validation-for="ModelYili" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7 mb-3">
+                <label asp-for="Model" class="form-label"></label>
+                <input asp-for="Model" class="form-control" />
+                <span asp-validation-for="Model" class="text-danger"></span>
+            </div>
+            <div class="col-5 mb-3">
+                <label asp-for="Kilometre" class="form-label"></label>
+                <input asp-for="Kilometre" class="form-control" type="number" />
+                <span asp-validation-for="Kilometre" class="text-danger"></span>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

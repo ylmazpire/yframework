@@ -1,0 +1,40 @@
+@using YFramework.Formatting
+@using YFramework.Validation
+@model List<OtoServisApp.Models.Fatura>
+@{
+    ViewData["Title"] = "Faturalar";
+}
+
+<h2 class="mb-3">Faturalar</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz fatura kesilmemiş. Tamamlanmış bir iş emrinden fatura oluşturabilirsin.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Fatura No</th><th>Tarih</th><th>Araç</th><th>Müşteri</th><th class="text-end">Genel Toplam</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var f in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@f.FaturaNo</td>
+                            <td>@f.Tarih.ToString("dd.MM.yyyy")</td>
+                            <td>@(f.IsEmri?.Arac is null ? "—" : TurkishLicensePlateFormatter.Bicimlendir(f.IsEmri.Arac.Plaka))</td>
+                            <td>@f.IsEmri?.Arac?.Musteri?.AdSoyad</td>
+                            <td class="text-end fw-semibold">@TurkishCurrencyFormatter.Format(f.GenelToplam)</td>
+                            <td class="text-end"><a asp-action="Detay" asp-route-id="@f.Id" class="btn btn-sm btn-outline-secondary">Aç</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

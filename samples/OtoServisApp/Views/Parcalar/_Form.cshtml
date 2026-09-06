@@ -1,0 +1,32 @@
+@model OtoServisApp.Models.ParcaFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="row">
+    <div class="col-5 mb-3">
+        <label asp-for="StokKodu" class="form-label"></label>
+        <input asp-for="StokKodu" class="form-control" />
+        <span asp-validation-for="StokKodu" class="text-danger"></span>
+    </div>
+    <div class="col-7 mb-3">
+        <label asp-for="Ad" class="form-label"></label>
+        <input asp-for="Ad" class="form-control" />
+        <span asp-validation-for="Ad" class="text-danger"></span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-4 mb-3">
+        <label asp-for="StokAdedi" class="form-label"></label>
+        <input asp-for="StokAdedi" class="form-control" type="number" />
+        <span asp-validation-for="StokAdedi" class="text-danger"></span>
+    </div>
+    <div class="col-4 mb-3">
+        <label asp-for="AlisFiyati" class="form-label"></label>
+        <input asp-for="AlisFiyati" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="AlisFiyati" class="text-danger"></span>
+    </div>
+    <div class="col-4 mb-3">
+        <label asp-for="SatisFiyati" class="form-label"></label>
+        <input asp-for="SatisFiyati" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="SatisFiyati" class="text-danger"></span>
+    </div>
+</div>

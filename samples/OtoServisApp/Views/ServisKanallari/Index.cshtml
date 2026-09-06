@@ -1,0 +1,46 @@
+@model List<OtoServisApp.Models.ServisKanali>
+@{
+    ViewData["Title"] = "Servis Kanalları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Servis Kanalları</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Yeni Kanal</a>
+</div>
+
+@if (TempData["Hata"] is string hata)
+{
+    <div class="alert alert-danger">@hata</div>
+}
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz servis kanalı (lift) tanımlanmamış.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase"><th>Ad</th><th>Durum</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@k.Ad</td>
+                            <td>@(k.Aktif ? "Aktif" : "Pasif")</td>
+                            <td class="text-end text-nowrap">
+                                <a asp-action="Edit" asp-route-id="@k.Id" class="btn btn-sm btn-outline-secondary">Düzenle</a>
+                                <form asp-action="Delete" asp-route-id="@k.Id" method="post" class="d-inline" onsubmit="return confirm('Silinsin mi?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

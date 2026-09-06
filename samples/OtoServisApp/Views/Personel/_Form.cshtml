@@ -1,0 +1,22 @@
+@model OtoServisApp.Models.PersonelFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="mb-3">
+    <label asp-for="AdSoyad" class="form-label"></label>
+    <input asp-for="AdSoyad" class="form-control" />
+    <span asp-validation-for="AdSoyad" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Uzmanlik" class="form-label"></label>
+    <input asp-for="Uzmanlik" class="form-control" placeholder="Motor, Kaporta, Elektrik…" />
+    <span asp-validation-for="Uzmanlik" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Telefon" class="form-label"></label>
+    <input asp-for="Telefon" class="form-control" inputmode="numeric" placeholder="0 533 598 32 12" />
+    <span asp-validation-for="Telefon" class="text-danger"></span>
+</div>
+<div class="form-check mb-3">
+    <input asp-for="Aktif" class="form-check-input" />
+    <label asp-for="Aktif" class="form-check-label"></label>
+</div>

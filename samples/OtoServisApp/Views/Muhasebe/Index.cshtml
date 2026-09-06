@@ -1,0 +1,102 @@
+@using YFramework.Formatting
+@model OtoServisApp.Models.MuhasebeRaporViewModel
+@{
+    ViewData["Title"] = "Muhasebe";
+    var enBuyuk = Model.AylikTrend.Count == 0 ? 1m : Model.AylikTrend.Max(a => Math.Max(a.Ozet.ToplamGelir, a.Ozet.ToplamGider));
+    if (enBuyuk == 0) enBuyuk = 1m;
+    int Yuzde(decimal v) => (int)Math.Round(v / enBuyuk * 100);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Muhasebe</h2>
+    <a asp-action="CsvIndir" asp-route-bas="@Model.Baslangic.ToString("yyyy-MM-dd")" asp-route-bit="@Model.Bitis.ToString("yyyy-MM-dd")" class="btn btn-outline-secondary">CSV indir</a>
+</div>
+
+<form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-auto">
+        <label class="form-label">Başlangıç</label>
+        <input type="date" name="bas" value="@Model.Baslangic.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-auto">
+        <label class="form-label">Bitiş</label>
+        <input type="date" name="bit" value="@Model.Bitis.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Uygula</button>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Gelir (faturalar)</div>
+            <div class="fs-4 fw-bold">@TurkishCurrencyFormatter.Format(Model.Ozet.ToplamGelir)</div>
+        </div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Gider</div>
+            <div class="fs-4 fw-bold">@TurkishCurrencyFormatter.Format(Model.Ozet.ToplamGider)</div>
+        </div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small">Net</div>
+            <div class="fs-4 fw-bold @(Model.Ozet.Net < 0 ? "text-danger" : "")">@TurkishCurrencyFormatter.Format(Model.Ozet.Net)</div>
+        </div></div>
+    </div>
+</div>
+
+<h4 class="mb-2">Aylık dağılım</h4>
+<div class="surface-card mb-4">
+    <table class="table table-borderless mb-0 align-middle">
+        <tbody>
+            @foreach (var a in Model.AylikTrend)
+            {
+                <tr>
+                    <td style="width:70px">@OtoServisApp.Models.MuhasebeRaporViewModel.AyKisaltmalari[a.Ay] @(a.Yil % 100)</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="background:var(--accent);height:14px;border-radius:3px;width:@(Yuzde(a.Ozet.ToplamGelir))%"></div>
+                            <span class="small text-muted">@TurkishCurrencyFormatter.Format(a.Ozet.ToplamGelir)</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <div style="background:var(--text-muted);height:14px;border-radius:3px;width:@(Yuzde(a.Ozet.ToplamGider))%"></div>
+                            <span class="small text-muted">@TurkishCurrencyFormatter.Format(a.Ozet.ToplamGider)</span>
+                        </div>
+                    </td>
+                    <td class="text-end fw-semibold @(a.Ozet.Net < 0 ? "text-danger" : "")">@TurkishCurrencyFormatter.Format(a.Ozet.Net)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h4 class="mb-2">Hareketler (@Model.Hareketler.Count)</h4>
+@if (!Model.Hareketler.Any())
+{
+    <p class="text-muted">Seçilen aralıkta hareket yok.</p>
+}
+else
+{
+    <div class="surface-card">
+        <div class="table-responsive">
+            <table class="table table-borderless mb-0 align-middle">
+                <thead>
+                    <tr class="text-muted small text-uppercase"><th>Tarih</th><th>Tür</th><th>Açıklama</th><th class="text-end">Tutar</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model.Hareketler)
+                    {
+                        <tr>
+                            <td>@h.Tarih.ToString("dd.MM.yyyy")</td>
+                            <td>@h.Tur</td>
+                            <td>@h.Aciklama</td>
+                            <td class="text-end @(h.GelirMi ? "" : "text-danger")">@(h.GelirMi ? "+" : "−")@TurkishCurrencyFormatter.Format(h.Tutar)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,24 @@
+@model OtoServisApp.Models.GiderFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="mb-3">
+    <label asp-for="Aciklama" class="form-label"></label>
+    <input asp-for="Aciklama" class="form-control" />
+    <span asp-validation-for="Aciklama" class="text-danger"></span>
+</div>
+<div class="row">
+    <div class="col-6 mb-3">
+        <label asp-for="Tutar" class="form-label"></label>
+        <input asp-for="Tutar" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Tutar" class="text-danger"></span>
+    </div>
+    <div class="col-6 mb-3">
+        <label asp-for="Tarih" class="form-label"></label>
+        <input asp-for="Tarih" class="form-control" type="date" />
+        <span asp-validation-for="Tarih" class="text-danger"></span>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="Kategori" class="form-label"></label>
+    <select asp-for="Kategori" asp-items="Html.GetEnumSelectList<OtoServisApp.Models.GiderKategorisi>()" class="form-select"></select>
+</div>
