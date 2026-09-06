@@ -5,4 +5,7 @@
   <Folder Name="/src/">
     <Project Path="src/YFramework/YFramework.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/YFramework.Tests/YFramework.Tests.csproj" />
+  </Folder>
 </Solution>
