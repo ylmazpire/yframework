@@ -72,20 +72,15 @@ public class HomeController : Controller
             .Where(k => k.Tarih >= baslangicAy)
             .ToListAsync();
 
-        var sonuc = new List<AylikTrendNoktasi>();
-        for (var i = 0; i < 6; i++)
-        {
-            var ay = baslangicAy.AddMonths(i);
-            var ozet = FinancialSummaryCalculator.AylikOzet(kayitlar, ay.Year, ay.Month);
-            sonuc.Add(new AylikTrendNoktasi
+        // 6 aylık gelir/gider trendi artık framework'ten geliyor (bkz. FinancialSummaryCalculator.AylikTrend).
+        return FinancialSummaryCalculator.AylikTrend(kayitlar, baslangicAy, 6)
+            .Select(nokta => new AylikTrendNoktasi
             {
-                AyEtiketi = $"{aylar[ay.Month]} {ay.Year % 100:D2}",
-                Gelir = ozet.ToplamGelir,
-                Gider = ozet.ToplamGider
-            });
-        }
-
-        return sonuc;
+                AyEtiketi = $"{aylar[nokta.Ay]} {nokta.Yil % 100:D2}",
+                Gelir = nokta.Ozet.ToplamGelir,
+                Gider = nokta.Ozet.ToplamGider
+            })
+            .ToList();
     }
 
     public IActionResult Privacy()
