@@ -8,14 +8,17 @@ Kendi ihtiyaçlarımız için C# / ASP.NET Core üzerine yazılan, tekrar kullan
 yframework/
 ├── src/YFramework/         ← framework'ün kendisi (class library, .NET 10)
 ├── samples/KuaforApp/      ← örnek uygulama #1 (kuaför randevu/muhasebe sistemi)
-└── samples/OtoServisApp/   ← örnek uygulama #2 (oto servis / tamirhane — iş emri, araç, parça/stok)
+├── samples/OtoServisApp/   ← örnek uygulama #2 (oto servis / tamirhane — iş emri, araç, parça/stok)
+└── samples/SslWatchman/    ← örnek uygulama #3 (sitelerin SSL sertifikalarını izler, bitişe yaklaşınca uyarır)
 ```
 
 İkinci örnek uygulamanın amacı framework'ü kuaföre özgü varsayımlardan arındırmak: aynı
 `src/YFramework`'e farklı bir domain'den bakınca eksik/özelleşmiş kalmış parçalar ortaya çıktı ve
 framework'e taşındı — kaynak bazlı planlama (`ResourceScheduler`), KDV'li fatura hesaplama
 (`InvoiceCalculator`), plaka/VKN/TCKN doğrulama, kiracı bazlı belge numarası (`Sequencing`),
-stok hareketleri (`Inventory`), serbest tarih aralığı + aylık trend raporu.
+stok hareketleri (`Inventory`), serbest tarih aralığı + aylık trend raporu. Üçüncü uygulama
+(`SslWatchman`) framework'e arka plan işi (`Jobs`) ve zamanlanmış izleme + uyarı (`Monitoring`)
+altyapısını kazandırdı — ilk iki uygulamada hiç yoktu.
 Eklenen her parçanın geriye dönük uyumlu kaldığı, `KuaforApp` da bu yeni parçaları kullanacak
 şekilde güncellenerek doğrulandı (randevu çakışma kontrolü → `ResourceScheduler`, dashboard
 trendi → `FinancialSummaryCalculator.AylikTrend`).
@@ -35,6 +38,8 @@ trendi → `FinancialSummaryCalculator.AylikTrend`).
 | Stok | `YFramework.Inventory` | `StockLedger` — imzalı stok hareketleri (`Giris`/`Cikis`/`EldekiMiktarAsync`/`HareketlerAsync`), her değişimin sebebi + referansı iz kalır. DbContext'te `modelBuilder.AddYFrameworkStockLedger()`. Uygulama isterse hızlı okuma için ayrıca materyalize bir sayaç (ör. `Parca.StokAdedi`) tutabilir |
 | Biçimlendirme | `YFramework.Formatting` | `TurkishCurrencyFormatter` (₺1.234,56) |
 | Doğrulama | `YFramework.Validation` | Telefon (`TurkishPhoneNumberAttribute` / `...Formatter`), T.C. kimlik no (`TurkishNationalId...`), vergi kimlik no (`TurkishTaxNumber...`), ikisinden biri (`TurkishTaxOrNationalIdAttribute`), plaka (`TurkishLicensePlate...` — normalize + doğrula + `34 ABC 123` biçimi) |
+| Arka plan işi | `YFramework.Jobs` | `RecurringBackgroundService` — belirli aralıklarla tekrar eden `BackgroundService` tabanı; bir tur hata verirse loglanır, döngü devam eder |
+| İzleme | `YFramework.Monitoring` | `IMonitoredTarget` + `MonitorCheck` (kontrol geçmişi, `AddYFrameworkMonitoring()`), `CheckOutcome` (Ok/Warning/Error/Critical). `Alerting/`: `IAlertChannel` + `WebhookAlertChannel` (Slack/Discord uyumlu), `AlertDecision`/`AlertDispatcher` — sadece durum değişince uyar (spam önleme) |
 | Barındırma | `YFramework.Hosting` | `UseYFrameworkDefaults()` — bilinen tuzaklara karşı doğru middleware sırası |
 
 Testler: `tests/YFramework.Tests` (xUnit). Doğrulama algoritmaları (TCKN/VKN kontrol haneleri, plaka kombinasyonları) burada test ediliyor — `dotnet test`.

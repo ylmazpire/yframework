@@ -1,0 +1,25 @@
+@model DomainFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="row">
+    <div class="col-8 mb-3">
+        <label asp-for="Host" class="form-label"></label>
+        <input asp-for="Host" class="form-control" placeholder="ornek.com" autocomplete="off" />
+        <span asp-validation-for="Host" class="text-danger"></span>
+        <div class="form-text">Sadece alan adı — "https://" ve yol otomatik ayıklanır.</div>
+    </div>
+    <div class="col-4 mb-3">
+        <label asp-for="Port" class="form-label"></label>
+        <input asp-for="Port" class="form-control" type="number" />
+        <span asp-validation-for="Port" class="text-danger"></span>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="Not" class="form-label"></label>
+    <input asp-for="Not" class="form-control" />
+    <span asp-validation-for="Not" class="text-danger"></span>
+</div>
+<div class="form-check mb-3">
+    <input asp-for="Aktif" class="form-check-input" />
+    <label asp-for="Aktif" class="form-check-label"></label>
+</div>

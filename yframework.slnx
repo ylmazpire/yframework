@@ -2,11 +2,13 @@
   <Folder Name="/samples/">
     <Project Path="samples/KuaforApp/KuaforApp.csproj" />
     <Project Path="samples/OtoServisApp/OtoServisApp.csproj" />
+    <Project Path="samples/SslWatchman/SslWatchman.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/YFramework/YFramework.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/YFramework.Tests/YFramework.Tests.csproj" />
+    <Project Path="tests/SslWatchman.Tests/SslWatchman.Tests.csproj" />
   </Folder>
 </Solution>
